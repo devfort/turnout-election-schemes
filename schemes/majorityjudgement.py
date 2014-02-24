@@ -1,9 +1,13 @@
 from operator import itemgetter
-from errors import IncompleteVoteError, InvalidVoteError
+from errors import IncompleteVoteError, InvalidVoteError, NoWinnerError
 from mj_david import MajorityJudgement as MJItem
 
 class MajorityJudgement(object):
     def sort_candidates(self, candidates):
+        """
+        Uses David's implementation (in mj_david module) and our data structures
+        to calculate a result.
+        """
         self._ensure_all_votes_are_of_same_length(votes for c, votes in candidates)
 
         mj_items = []
