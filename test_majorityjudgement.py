@@ -15,6 +15,33 @@ class MajorityJudgementTest(unittest.TestCase):
         actual_output = MajorityJudgement().sort_candidates(input_data)
         self.assertEqual(expected_output, actual_output)
 
+    #Anna
+    def test_basic_larger_case(self):
+        pass
+
+    #Good Steve
+    def test_simple_tie_breaker(self):
+        pass
+
+    #Dom
+    def test_complex_tie_breaker(self):
+        pass
+
+    #Anna
+    def test_incomplete_vote(self):
+        pass
+
+    #Good Steve
+    def test_even_number_of_voters_different_medians(self):
+        pass
+
+    #Dom
+    def test_two_identical_winners(self):
+        pass
+
+    #Whoever gets there first
+    def test_two_identical_losers(self):
+        pass
 
 if __name__ == '__main__':
     unittest.main()
