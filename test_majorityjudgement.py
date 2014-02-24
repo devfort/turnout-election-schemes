@@ -1,6 +1,6 @@
 import unittest
 from schemes.majorityjudgement import MajorityJudgement
-from schemes.errors import IncompleteVoteError
+from schemes.errors import IncompleteVoteError, NoWinnerError
 
 
 class MajorityJudgementTest(unittest.TestCase):
@@ -79,9 +79,15 @@ class MajorityJudgementTest(unittest.TestCase):
         actual_output = MajorityJudgement().sort_candidates(input_data)
         self.assertEqual(expected_output, actual_output)
 
-    #Dom
     def test_two_identical_winners(self):
-        pass
+        smith = ('L. Smith', (3, 8, 5, 7, 2))
+        jones = ('Q. Jones', (0, 3, 2, 9, 11))
+        rogers = ('P. Rogers', (3, 8, 5, 7, 2))
+
+        input_data = (smith, jones, rogers)
+
+        with self.assertRaises(NoWinnerError):
+            MajorityJudgement().sort_candidates(input_data)
 
     #Steve 2
     def test_two_identical_losers(self):
