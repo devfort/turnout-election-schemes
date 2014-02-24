@@ -56,8 +56,10 @@ class MajorityJudgementTest(unittest.TestCase):
         burger = ('Burger', (2,0))
         veggie = ('Veggie', (1,2,2))
 
+        input_data = (pizza, burger, veggie)
+
         with self.assertRaises(IncompleteVoteError):
-            input_data = (pizza, burger, veggie)
+            MajorityJudgement().sort_candidates(input_data)
 
     #Good Steve
     def test_even_number_of_voters_different_medians(self):
