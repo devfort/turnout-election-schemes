@@ -91,7 +91,16 @@ class MajorityJudgementTest(unittest.TestCase):
 
     #Steve 2
     def test_two_identical_losers(self):
-        pass
+        castle = ('Castle', (1,2,2))               #GAAPP
+        fort = ('Fort', (5,0,0))                   #GGGGG
+        country_house = ('Country house', (1,2,2)) #GAAPP
+
+        input_data = (castle, fort, country_house)
+        expected_output = (fort, castle, country_house)
+
+        actual_output = MajorityJudgement().sort_candidates(input_data)
+        self.assertEqual(expected_output, actual_output)
+
 
 if __name__ == '__main__':
     unittest.main()
