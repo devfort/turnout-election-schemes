@@ -41,7 +41,23 @@ class MajorityJudgementTest(unittest.TestCase):
 
     #Good Steve
     def test_even_number_of_voters_different_medians(self):
-        pass
+        """
+        In this case, there are 6 voters.
+
+        If we used the 3rd item for the median, result order would be pizza, burger, veggie.
+        But, if we use the 4th item for the median, result would be   burger, pizza, veggie.
+
+        The second is the *correct* way.
+        """
+        pizza = ('Pizza', (3,0,3))   #GGGPPP
+        burger = ('Burger', (2,2,2)) #GGAAPP
+        veggie = ('Veggie', (2,0,4)) #GGPPPP
+
+        input_data = (pizza, burger, veggie)
+        expected_output = (burger, pizza, veggie)
+
+        actual_output = MajorityJudgement().sort_candidates(input_data)
+        self.assertEqual(expected_output, actual_output)
 
     #Dom
     def test_two_identical_winners(self):
