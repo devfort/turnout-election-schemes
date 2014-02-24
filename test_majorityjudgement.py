@@ -30,7 +30,15 @@ class MajorityJudgementTest(unittest.TestCase):
 
     #Good Steve
     def test_simple_tie_breaker(self):
-        pass
+        pizza = ('Pizza', (1,2,2))   #GAAPP, #GAPP, #GAP
+        burger = ('Burger', (2,3,0)) #GGAAA, #GGAA, #GGA
+        veggie = ('Veggie', (2,1,2)) #GGAPP, #GGPP, #GGP
+
+        input_data = (pizza, burger, veggie)
+        expected_output = (burger, veggie, pizza)
+
+        actual_output = MajorityJudgement().sort_candidates(input_data)
+        self.assertEqual(expected_output, actual_output)
 
     #Dom
     def test_complex_tie_breaker(self):
