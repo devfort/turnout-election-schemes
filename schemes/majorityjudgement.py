@@ -1,6 +1,6 @@
 from operator import itemgetter
 from errors import IncompleteVoteError, InvalidVoteError, NoWinnerError
-from mj_david import MajorityJudgement as MJItem
+from mj_david import MajorityJudgement as MJCandidate
 
 class MajorityJudgement(object):
     def sort_candidates(self, candidates):
@@ -8,20 +8,20 @@ class MajorityJudgement(object):
         Uses David's implementation (in mj_david module) and our data structures
         to calculate a result.
         """
-        self._ensure_all_votes_are_of_same_length(votes for c, votes in candidates)
+        self._ensure_all_votes_are_of_same_length(map(itemgetter(1), candidates))
 
-        mj_items = []
+        mj_candidates = []
 
-        for candidate_name, votes in candidates:
-            item = MJItem(votes)
-            item.original_tuple = (candidate_name, votes)
+        for candidate_tuple in candidates:
+            mj_candidate = MJCandidate(candidate_tuple[1])
+            mj_candidate.original_tuple = candidate_tuple
 
-            mj_items.append(item)
+            mj_candidates.append(mj_candidate)
 
-        sorted_items = sorted(mj_items)
-        self._ensure_no_duplicate_winner(sorted_items)
+        sorted_mj_candidates = sorted(mj_candidates)
+        self._ensure_no_duplicate_winner(sorted_mj_candidates)
 
-        return tuple(item.original_tuple for item in sorted_items)
+        return tuple(mj_candidate.original_tuple for mj_candidate in sorted_mj_candidates)
 
     def _ensure_all_votes_are_of_same_length(self, votes):
         unique_vote_sizes = set(map(len, votes))
@@ -29,7 +29,7 @@ class MajorityJudgement(object):
             raise IncompleteVoteError()
 
     def _ensure_no_duplicate_winner(self, sorted_items):
-        if len(sorted_items) >= 2 and cmp(sorted_items[0], sorted_items[1]) == 0:
+        if len(sorted_items) >= 2 and not cmp(sorted_items[0], sorted_items[1]):
             raise NoWinnerError()
 
 
