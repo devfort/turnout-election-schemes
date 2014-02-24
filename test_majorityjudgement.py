@@ -40,9 +40,15 @@ class MajorityJudgementTest(unittest.TestCase):
         actual_output = MajorityJudgement().sort_candidates(input_data)
         self.assertEqual(expected_output, actual_output)
 
-    #Dom
     def test_complex_tie_breaker(self):
-        pass
+        rioja = ('Rioja', (2, 1, 6, 2, 2))
+        bordeaux = ('Bordeaux', (1, 2, 6, 2, 2))
+        tempranillo = ('Tempranillo', (1, 2, 6, 3, 1))
+
+        input_data = (rioja, bordeaux, tempranillo)
+        expected = (rioja, tempranillo, bordeaux)
+
+        self.assertEqual(expected, MajorityJudgement().sort_candidates(input_data))
 
     #Anna
     def test_incomplete_vote(self):
