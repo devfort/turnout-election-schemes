@@ -1,4 +1,5 @@
 import unittest
+from schemes.majorityjudgement import MajorityJudgement
 
 class MajorityJudgementTest(unittest.TestCase):
 
@@ -11,7 +12,7 @@ class MajorityJudgementTest(unittest.TestCase):
 
         expected_output = (pizza, veggie, burger)
 
-        actual_output = MajorityJudgement().sortCandidates(input_data)
+        actual_output = MajorityJudgement().sort_candidates(input_data)
         self.assertEqual(expected_output, actual_output)
 
 
