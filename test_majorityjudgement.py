@@ -15,9 +15,18 @@ class MajorityJudgementTest(unittest.TestCase):
         actual_output = MajorityJudgement().sort_candidates(input_data)
         self.assertEqual(expected_output, actual_output)
 
-    #Anna
     def test_basic_larger_case(self):
-        pass
+        chinese = ('Chinese', (26,7,8,6,40,12))
+        pizza = ('Pizza', (45,17,4,21,10,2))
+        indian = ('Indian', (17,2,33,33,4,10))
+        burger = ('Burger', (8,7,26,40,12,6))
+
+        input_data = (chinese, pizza, indian, burger)
+
+        expected_output = (pizza, indian, burger, chinese)
+
+        actual_output = MajorityJudgement().sort_candidates(input_data)
+        self.assertEqual(expected_output, actual_output)
 
     #Good Steve
     def test_simple_tie_breaker(self):
@@ -31,9 +40,15 @@ class MajorityJudgementTest(unittest.TestCase):
         actual_output = MajorityJudgement().sort_candidates(input_data)
         self.assertEqual(expected_output, actual_output)
 
-    #Dom
     def test_complex_tie_breaker(self):
-        pass
+        rioja = ('Rioja', (2, 1, 6, 2, 2))
+        bordeaux = ('Bordeaux', (1, 2, 6, 2, 2))
+        tempranillo = ('Tempranillo', (1, 2, 6, 3, 1))
+
+        input_data = (rioja, bordeaux, tempranillo)
+        expected = (rioja, tempranillo, bordeaux)
+
+        self.assertEqual(expected, MajorityJudgement().sort_candidates(input_data))
 
     #Anna
     def test_incomplete_vote(self):
