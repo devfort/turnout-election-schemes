@@ -18,4 +18,3 @@ class VoteAggregator(object):
             aggregate.append((candidate, tuple(reversed(grade_counts))))
 
         return tuple(aggregate)
-
