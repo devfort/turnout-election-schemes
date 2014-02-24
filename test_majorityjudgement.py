@@ -78,7 +78,7 @@ class MajorityJudgementTest(unittest.TestCase):
     def test_two_identical_winners(self):
         pass
 
-    #Whoever gets there first
+    #Steve 2
     def test_two_identical_losers(self):
         pass
 
