@@ -4,11 +4,14 @@ from schemes.errors import IncompleteVoteError, NoWinnerError
 
 
 class MajorityJudgementTest(unittest.TestCase):
-
+    """
+    Note the endian-ness of the votes - they go in INCREASING order of good-ness
+    i.e. (1,1,3) means 1 vote for Poor, 1 vote for Acceptable and 3 votes for good.
+    """
     def test_basic_small_case(self):
-        pizza = ('Pizza', (3,1,1))
-        burger = ('Burger', (2,0,3))
-        veggie = ('Veggie', (1,2,2))
+        pizza = ('Pizza', (1,1,3))
+        burger = ('Burger', (3,0,2))
+        veggie = ('Veggie', (2,2,1))
 
         input_data = (pizza, burger, veggie)
 
@@ -18,10 +21,10 @@ class MajorityJudgementTest(unittest.TestCase):
         self.assertEqual(expected_output, actual_output)
 
     def test_basic_larger_case(self):
-        chinese = ('Chinese', (26,7,8,6,40,12))
-        pizza = ('Pizza', (45,17,4,21,10,2))
-        indian = ('Indian', (17,2,33,33,4,10))
-        burger = ('Burger', (8,7,26,40,12,6))
+        chinese = ('Chinese', (12,40,6,8,7,26))
+        pizza = ('Pizza', (2,10,21,4,17,45))
+        indian = ('Indian', (10,4,33,33,2,17))
+        burger = ('Burger', (6,12,40,26,7,8))
 
         input_data = (chinese, pizza, indian, burger)
 
@@ -31,9 +34,9 @@ class MajorityJudgementTest(unittest.TestCase):
         self.assertEqual(expected_output, actual_output)
 
     def test_simple_tie_breaker(self):
-        pizza = ('Pizza', (1,2,2))   #GAAPP, #GAPP, #GAP
-        burger = ('Burger', (2,3,0)) #GGAAA, #GGAA, #GGA
-        veggie = ('Veggie', (2,1,2)) #GGAPP, #GGPP, #GGP
+        pizza = ('Pizza', (2,2,1))   #PPAAG, PPAG, PAG
+        burger = ('Burger', (0,3,2)) #AAAGG, AAGG, AGG
+        veggie = ('Veggie', (2,1,2)) #PPAGG, PPGG, PGG
 
         input_data = (pizza, burger, veggie)
         expected_output = (burger, veggie, pizza)
@@ -42,9 +45,9 @@ class MajorityJudgementTest(unittest.TestCase):
         self.assertEqual(expected_output, actual_output)
 
     def test_complex_tie_breaker(self):
-        rioja = ('Rioja', (2, 1, 6, 2, 2))
-        bordeaux = ('Bordeaux', (1, 2, 6, 2, 2))
-        tempranillo = ('Tempranillo', (1, 2, 6, 3, 1))
+        rioja = ('Rioja', (2, 2, 6, 1, 2))
+        bordeaux = ('Bordeaux', (2, 2, 6, 2, 1))
+        tempranillo = ('Tempranillo', (1, 3, 6, 2, 1))
 
         input_data = (rioja, bordeaux, tempranillo)
         expected = (rioja, tempranillo, bordeaux)
@@ -72,14 +75,14 @@ class MajorityJudgementTest(unittest.TestCase):
         """
         In this case, there are 6 voters.
 
-        If we used the 3rd item for the median, result order would be red, blue, green.
-        But, if we use the 4th item for the median, result would be   blue, red, green.
+        If we used the 4th item for the median, result order would be red, blue, green.
+        But, if we use the 3th item for the median, result would be   blue, red, green.
 
         The second is the *correct* way.
         """
-        red = ('Red party', (3,0,3))     #GGGPPP
-        blue = ('Blue party', (2,2,2))   #GGAAPP
-        green = ('Green party', (2,0,4)) #GGPPPP
+        red = ('Red party', (3,0,3))     #PPPGGG
+        blue = ('Blue party', (2,2,2))   #PPAAGG
+        green = ('Green party', (4,0,2)) #PPPPGG
 
         input_data = (red, blue, green)
         expected_output = (blue, red, green)
@@ -93,9 +96,9 @@ class MajorityJudgementTest(unittest.TestCase):
         distributions we cannot pick a winner and an exception should be
         raised.
         """
-        smith = ('L. Smith', (3, 8, 5, 7, 2))
-        jones = ('Q. Jones', (0, 3, 2, 9, 11))
-        rogers = ('P. Rogers', (3, 8, 5, 7, 2))
+        smith = ('L. Smith', (2, 7, 5, 8, 3))
+        jones = ('Q. Jones', (11, 9, 2, 3, 0))
+        rogers = ('P. Rogers', (2, 7, 5, 8, 3))
 
         input_data = (smith, jones, rogers)
 
@@ -104,9 +107,9 @@ class MajorityJudgementTest(unittest.TestCase):
 
     #Steve 2
     def test_two_identical_losers(self):
-        castle = ('Castle', (1,2,2))               #GAAPP
-        fort = ('Fort', (5,0,0))                   #GGGGG
-        country_house = ('Country house', (1,2,2)) #GAAPP
+        castle = ('Castle', (2,2,1))               #PPAAG
+        fort = ('Fort', (0,0,5))                   #GGGGG
+        country_house = ('Country house', (2,2,1)) #PPAAG
 
         input_data = (castle, fort, country_house)
         expected_output = (fort, castle, country_house)

@@ -13,7 +13,9 @@ class MajorityJudgement(object):
         mj_candidates = []
 
         for candidate_tuple in candidates:
-            mj_candidate = MJCandidate(candidate_tuple[1])
+            # David's code takes the votes in the opposite endien-ness (i.e.
+            # the number in the best grade first)
+            mj_candidate = MJCandidate(tuple(reversed(candidate_tuple[1])))
             mj_candidate.original_tuple = candidate_tuple
 
             mj_candidates.append(mj_candidate)
@@ -81,7 +83,7 @@ class VoteAggregator(object):
         # However, the aggregated output needs to list the number of the *best* grade
         # first, going down in good-ness until the number of the *worst* grade
         # last. Hence the reverse here.
-        return tuple(reversed(grade_counts))
+        return tuple(grade_counts)
 
     def _candidate_tuple(self, candidate_name, candidate_votes):
         return (candidate_name, self._grade_counts_for_candidate(candidate_votes))

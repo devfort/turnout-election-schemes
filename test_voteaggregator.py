@@ -23,10 +23,11 @@ class TestVoteAggregator(unittest.TestCase):
 
         # Assert
         expected_output = (
-                ('Pizza',   (1, 0, 0, 1, 2)),
-                ('Chinese', (1, 1, 1, 1, 0)),
-                ('Indian',  (0, 1, 1, 1, 1)),
-                ('Burger',  (3, 0, 1, 0, 0)))
+                ('Pizza',   (2, 1, 0, 0, 1)),
+                ('Chinese', (0, 1, 1, 1, 1)),
+                ('Indian',  (1, 1, 1, 1, 0)),
+                ('Burger',  (0, 0, 1, 0, 3))
+                )
 
         self.assertEqual(expected_output, actual_output)
 
@@ -44,10 +45,10 @@ class TestVoteAggregator(unittest.TestCase):
 
         # Assert
         expected_output = (
-                ('Pizza',   (0, 0, 2, 2, 0)),
+                ('Pizza',   (0, 2, 2, 0, 0)),
                 ('Chinese', (0, 2, 0, 2, 0)),
-                ('Indian',  (0, 2, 2, 0, 0)),
-                ('Burger',  (0, 3, 0, 1, 0)))
+                ('Indian',  (0, 0, 2, 2, 0)),
+                ('Burger',  (0, 1, 0, 3, 0)))
 
         self.assertEqual(expected_output, actual_output)
 
