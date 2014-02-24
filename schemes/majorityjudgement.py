@@ -4,6 +4,8 @@ from mj_david import MajorityJudgement as MJItem
 
 class MajorityJudgement(object):
     def sort_candidates(self, candidates):
+        self._ensure_all_votes_are_of_same_length(votes for c, votes in candidates)
+
         mj_items = []
 
         for candidate_name, votes in candidates:
@@ -13,7 +15,18 @@ class MajorityJudgement(object):
             mj_items.append(item)
 
         sorted_items = sorted(mj_items)
+        self._ensure_no_duplicate_winner(sorted_items)
+
         return tuple(item.original_tuple for item in sorted_items)
+
+    def _ensure_all_votes_are_of_same_length(self, votes):
+        unique_vote_sizes = set(map(len, votes))
+        if len(unique_vote_sizes) > 1:
+            raise IncompleteVoteError()
+
+    def _ensure_no_duplicate_winner(self, sorted_items):
+        if len(sorted_items) >= 2 and cmp(sorted_items[0], sorted_items[1]) == 0:
+            raise NoWinnerError()
 
 
 class VoteAggregator(object):
