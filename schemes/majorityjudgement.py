@@ -1,9 +1,20 @@
 from operator import itemgetter
 from errors import IncompleteVoteError, InvalidVoteError
+from mj_david import MajorityJudgement as MJItem
 
 class MajorityJudgement(object):
     def sort_candidates(self, candidates):
-        return candidates
+        mj_items = []
+
+        for candidate_name, votes in candidates:
+            item = MJItem(votes)
+            item.original_tuple = (candidate_name, votes)
+
+            mj_items.append(item)
+
+        sorted_items = sorted(mj_items)
+        return tuple(item.original_tuple for item in sorted_items)
+
 
 class VoteAggregator(object):
     def __init__(self, candidate_names, number_of_grades):
