@@ -112,8 +112,7 @@ class MajorityJudgementTest(unittest.TestCase):
         expected_output = (fort, castle, country_house)
 
         actual_output = MajorityJudgement().sort_candidates(input_data)
-        self.assertEqual(expected_output, actual_output)
-
+        self.fail("TODO: Sort this test and implementation out - we need to do something better when there are two losers")
 
 if __name__ == '__main__':
     unittest.main()
