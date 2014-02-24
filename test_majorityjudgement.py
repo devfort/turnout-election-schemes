@@ -59,17 +59,17 @@ class MajorityJudgementTest(unittest.TestCase):
         """
         In this case, there are 6 voters.
 
-        If we used the 3rd item for the median, result order would be pizza, burger, veggie.
-        But, if we use the 4th item for the median, result would be   burger, pizza, veggie.
+        If we used the 3rd item for the median, result order would be red, blue, green.
+        But, if we use the 4th item for the median, result would be   blue, red, green.
 
         The second is the *correct* way.
         """
-        pizza = ('Pizza', (3,0,3))   #GGGPPP
-        burger = ('Burger', (2,2,2)) #GGAAPP
-        veggie = ('Veggie', (2,0,4)) #GGPPPP
+        red = ('Red party', (3,0,3))     #GGGPPP
+        blue = ('Blue party', (2,2,2))   #GGAAPP
+        green = ('Green party', (2,0,4)) #GGPPPP
 
-        input_data = (pizza, burger, veggie)
-        expected_output = (burger, pizza, veggie)
+        input_data = (red, blue, green)
+        expected_output = (blue, red, green)
 
         actual_output = MajorityJudgement().sort_candidates(input_data)
         self.assertEqual(expected_output, actual_output)
