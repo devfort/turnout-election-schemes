@@ -1,5 +1,7 @@
 import unittest
 from schemes.majorityjudgement import MajorityJudgement
+from schemes.errors import IncompleteVoteError
+
 
 class MajorityJudgementTest(unittest.TestCase):
 
@@ -28,7 +30,6 @@ class MajorityJudgementTest(unittest.TestCase):
         actual_output = MajorityJudgement().sort_candidates(input_data)
         self.assertEqual(expected_output, actual_output)
 
-    #Good Steve
     def test_simple_tie_breaker(self):
         pizza = ('Pizza', (1,2,2))   #GAAPP, #GAPP, #GAP
         burger = ('Burger', (2,3,0)) #GGAAA, #GGAA, #GGA
@@ -44,9 +45,13 @@ class MajorityJudgementTest(unittest.TestCase):
     def test_complex_tie_breaker(self):
         pass
 
-    #Anna
     def test_incomplete_vote(self):
-        pass
+        pizza = ('Pizza', (3,1,1))
+        burger = ('Burger', (2,0))
+        veggie = ('Veggie', (1,2,2))
+
+        with self.assertRaises(IncompleteVoteError):
+            input_data = (pizza, burger, veggie)
 
     #Good Steve
     def test_even_number_of_voters_different_medians(self):
