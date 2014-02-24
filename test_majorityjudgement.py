@@ -52,6 +52,12 @@ class MajorityJudgementTest(unittest.TestCase):
         self.assertEqual(expected, MajorityJudgement().sort_candidates(input_data))
 
     def test_incomplete_vote(self):
+        """
+        We are expecting the input data to have votes for each of the candidates
+        (i.e. any padding with 0 or defaulting to 'reject' should happen before
+        it gets to us. If the data is not complete in this way, we raise an
+        IncompleteVoteError.
+        """
         pizza = ('Pizza', (3,1,1))
         burger = ('Burger', (2,0))
         veggie = ('Veggie', (1,2,2))
