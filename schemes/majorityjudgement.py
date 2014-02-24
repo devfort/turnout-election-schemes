@@ -77,12 +77,6 @@ class VoteAggregator(object):
 
             grade_counts[vote] += 1
 
-        # NOTE: The individual user votes use grades that start at 0 for worst,
-        # and increase for better things.
-
-        # However, the aggregated output needs to list the number of the *best* grade
-        # first, going down in good-ness until the number of the *worst* grade
-        # last. Hence the reverse here.
         return tuple(grade_counts)
 
     def _candidate_tuple(self, candidate_name, candidate_votes):
