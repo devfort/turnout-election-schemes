@@ -41,9 +41,15 @@ class MajorityJudgementTest(unittest.TestCase):
         actual_output = MajorityJudgement().sort_candidates(input_data)
         self.assertEqual(expected_output, actual_output)
 
-    #Dom
     def test_complex_tie_breaker(self):
-        pass
+        rioja = ('Rioja', (2, 1, 6, 2, 2))
+        bordeaux = ('Bordeaux', (1, 2, 6, 2, 2))
+        tempranillo = ('Tempranillo', (1, 2, 6, 3, 1))
+
+        input_data = (rioja, bordeaux, tempranillo)
+        expected = (rioja, tempranillo, bordeaux)
+
+        self.assertEqual(expected, MajorityJudgement().sort_candidates(input_data))
 
     def test_incomplete_vote(self):
         pizza = ('Pizza', (3,1,1))
@@ -55,13 +61,29 @@ class MajorityJudgementTest(unittest.TestCase):
 
     #Good Steve
     def test_even_number_of_voters_different_medians(self):
-        pass
+        """
+        In this case, there are 6 voters.
+
+        If we used the 3rd item for the median, result order would be red, blue, green.
+        But, if we use the 4th item for the median, result would be   blue, red, green.
+
+        The second is the *correct* way.
+        """
+        red = ('Red party', (3,0,3))     #GGGPPP
+        blue = ('Blue party', (2,2,2))   #GGAAPP
+        green = ('Green party', (2,0,4)) #GGPPPP
+
+        input_data = (red, blue, green)
+        expected_output = (blue, red, green)
+
+        actual_output = MajorityJudgement().sort_candidates(input_data)
+        self.assertEqual(expected_output, actual_output)
 
     #Dom
     def test_two_identical_winners(self):
         pass
 
-    #Whoever gets there first
+    #Steve 2
     def test_two_identical_losers(self):
         pass
 
