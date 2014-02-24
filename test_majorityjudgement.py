@@ -82,6 +82,11 @@ class MajorityJudgementTest(unittest.TestCase):
         self.assertEqual(expected_output, actual_output)
 
     def test_two_identical_winners(self):
+        """
+        When the two highest ranked candidates have identical vote
+        distributions we cannot pick a winner and an exception should be
+        raised.
+        """
         smith = ('L. Smith', (3, 8, 5, 7, 2))
         jones = ('Q. Jones', (0, 3, 2, 9, 11))
         rogers = ('P. Rogers', (3, 8, 5, 7, 2))
