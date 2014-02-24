@@ -52,6 +52,12 @@ class MajorityJudgementTest(unittest.TestCase):
         self.assertEqual(expected, MajorityJudgement().sort_candidates(input_data))
 
     def test_incomplete_vote(self):
+        """
+        We are expecting the input data to have votes for each of the candidates
+        (i.e. any padding with 0 or defaulting to 'reject' should happen before
+        it gets to us. If the data is not complete in this way, we raise an
+        IncompleteVoteError.
+        """
         pizza = ('Pizza', (3,1,1))
         burger = ('Burger', (2,0))
         veggie = ('Veggie', (1,2,2))
@@ -82,6 +88,11 @@ class MajorityJudgementTest(unittest.TestCase):
         self.assertEqual(expected_output, actual_output)
 
     def test_two_identical_winners(self):
+        """
+        When the two highest ranked candidates have identical vote
+        distributions we cannot pick a winner and an exception should be
+        raised.
+        """
         smith = ('L. Smith', (3, 8, 5, 7, 2))
         jones = ('Q. Jones', (0, 3, 2, 9, 11))
         rogers = ('P. Rogers', (3, 8, 5, 7, 2))
