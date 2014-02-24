@@ -9,10 +9,10 @@ class VoteAggregator(object):
         votes_for_candidates = (map(itemgetter(i), all_votes) for i, _ in enumerate(candidates))
 
         aggregate = []
-        for candidate, votes in zip(candidates, votes_for_candidates):
+        for candidate, candidate_votes in zip(candidates, votes_for_candidates):
             grade_counts = [0] * number_of_grades
 
-            for vote in votes:
+            for vote in candidate_votes:
                 grade_counts[vote] += 1
 
             aggregate.append((candidate, tuple(reversed(grade_counts))))
