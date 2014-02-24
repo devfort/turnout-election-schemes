@@ -30,7 +30,7 @@ class TestVoteAggregator(unittest.TestCase):
 
         self.assertEqual(expected_output, actual_output)
 
-    def test_noone_chose_some_of_the_grades(self):
+    def test_noone_chose_top_or_bottom_grade_returns_zeros_for_those_grades(self):
         #This vote has 5 levels, ranging from worst (0) to best (4)
         candidates = ('Pizza', 'Chinese', 'Indian', 'Burger')
 
