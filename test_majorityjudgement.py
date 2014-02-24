@@ -15,9 +15,18 @@ class MajorityJudgementTest(unittest.TestCase):
         actual_output = MajorityJudgement().sort_candidates(input_data)
         self.assertEqual(expected_output, actual_output)
 
-    #Anna
     def test_basic_larger_case(self):
-        pass
+        chinese = ('Chinese', (26,7,8,6,40,12))
+        pizza = ('Pizza', (45,17,4,21,10,2))
+        indian = ('Indian', (17,2,33,33,4,10))
+        burger = ('Burger', (8,7,26,40,12,6))
+
+        input_data = (chinese, pizza, indian, burger)
+
+        expected_output = (pizza, indian, burger, chinese)
+
+        actual_output = MajorityJudgement().sort_candidates(input_data)
+        self.assertEqual(expected_output, actual_output)
 
     #Good Steve
     def test_simple_tie_breaker(self):
