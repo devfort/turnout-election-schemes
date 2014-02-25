@@ -179,8 +179,8 @@ class SingeTransferableVoteTest(unittest.TestCase):
         expected_reallocated_totals = {
             'Oranges': 5,
             'Apples': 5,
-            'Pears': 4,
-            'Lemons': 2,
+            'Pears': 1 + Fraction(13,21),
+            'Lemons': Fraction(46, 63),
             'Limes':0,
         }
 

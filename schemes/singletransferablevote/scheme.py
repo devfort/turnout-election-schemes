@@ -47,20 +47,20 @@ class SingleTransferableVoteScheme(object):
 
     def reallocate_surplus_votes(self, quota, totals):
         # Identify candidate to be reallocated
-        # TODO: Deal with reallocation for multiple candidates
-        reallocation_candidate = None
+        reallocation_candidates = []
         for candidate, total in totals.items():
             if total > quota:
-                reallocation_candidate = candidate
+                reallocation_candidates.append(candidate)
 
-        reallocated_vote_value = Fraction(totals[reallocation_candidate] - quota, totals[reallocation_candidate])
-
-        # Reallocate candidate's votes
         reallocated_totals = totals
-        reallocated_totals[reallocation_candidate] = quota
-        for vote in self.votes:
-            if reallocation_candidate == vote[0]:
-                if len(vote) > 1:
-                    reallocated_totals[vote[1]] = reallocated_totals[vote[1]] + reallocated_vote_value
+        for reallocation_candidate in reallocation_candidates:
+            reallocated_vote_value = Fraction(totals[reallocation_candidate] - quota, totals[reallocation_candidate])
+
+            # Reallocate candidate's votes
+            reallocated_totals[reallocation_candidate] = quota
+            for vote in self.votes:
+                if reallocation_candidate == vote[0]:
+                    if len(vote) > 1:
+                        reallocated_totals[vote[1]] = reallocated_totals[vote[1]] + reallocated_vote_value
 
         return reallocated_totals
