@@ -2,28 +2,56 @@ from operator import itemgetter
 from errors import IncompleteVoteError, InvalidVoteError, NoWinnerError
 from mj_david import MajorityJudgement as MJCandidate
 
+class Candidate(object):
+    def __init__(self, name, votes):
+        self.name = name
+        self.votes = votes
+        self.majority_value = self._get_majority_value(self.votes)
+
+    def to_tuple(self):
+        return (self.name, self.votes)
+
+    def _get_majority_value(self, tally):
+        total_votes = sum(tally)
+        votes_so_far = 0
+        for i, tally_item in enumerate(tally):
+            votes_so_far += tally_item
+            if (total_votes % 2 == 1 and votes_so_far > (total_votes-1)/2) \
+                or (total_votes % 2 == 0 and votes_so_far > (total_votes/2)-1):
+                    return [i] + self._get_majority_value(self._tally_with_ith_decremented(tally, i))
+        return []
+
+    def _tally_with_ith_decremented(self, tally, i_to_change):
+        new_tally = []
+        for i, t in enumerate(tally):
+            if i == i_to_change:
+                new_tally.append(t-1)
+            else:
+                new_tally.append(t)
+
+        return tuple(new_tally)
+
+    @classmethod
+    def from_tuple(klass, t):
+        return klass(t[0], t[1])
+
 class MajorityJudgement(object):
+
     def sort_candidates(self, candidates):
-        """
-        Uses David's implementation (in mj_david module) and our data structures
-        to calculate a result.
-        """
         self._ensure_all_votes_are_of_same_length(map(itemgetter(1), candidates))
 
-        mj_candidates = []
+        candidate_objects = map(Candidate.from_tuple, candidates)
+        sorted_candidates = self._get_sorted_candidates(candidate_objects)
 
-        for candidate_tuple in candidates:
-            # David's code takes the votes in the opposite endien-ness (i.e.
-            # the number in the best grade first)
-            mj_candidate = MJCandidate(tuple(reversed(candidate_tuple[1])))
-            mj_candidate.original_tuple = candidate_tuple
+        self._ensure_no_duplicate_winner(sorted_candidates)
 
-            mj_candidates.append(mj_candidate)
+        return tuple(c.to_tuple() for c in sorted_candidates)
 
-        sorted_mj_candidates = sorted(mj_candidates)
-        self._ensure_no_duplicate_winner(sorted_mj_candidates)
-
-        return tuple(mj_candidate.original_tuple for mj_candidate in sorted_mj_candidates)
+    def _get_sorted_candidates(self, candidates):
+        return sorted(
+                    candidates,
+                    lambda c1, c2: cmp(c1.majority_value, c2.majority_value),
+                    reverse=True)
 
     def _ensure_all_votes_are_of_same_length(self, votes):
         unique_vote_sizes = set(map(len, votes))
@@ -31,7 +59,7 @@ class MajorityJudgement(object):
             raise IncompleteVoteError()
 
     def _ensure_no_duplicate_winner(self, sorted_items):
-        if len(sorted_items) >= 2 and not cmp(sorted_items[0], sorted_items[1]):
+        if len(sorted_items) >= 2 and sorted_items[0].majority_value == sorted_items[1].majority_value:
             raise NoWinnerError()
 
 

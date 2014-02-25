@@ -45,12 +45,12 @@ class MajorityJudgementTest(unittest.TestCase):
         self.assertEqual(expected_output, actual_output)
 
     def test_complex_tie_breaker(self):
-        rioja = ('Rioja', (2, 2, 6, 1, 2))
-        bordeaux = ('Bordeaux', (2, 2, 6, 2, 1))
-        tempranillo = ('Tempranillo', (1, 3, 6, 2, 1))
+        rioja = ('Rioja', (2, 2, 6, 1, 2))               #PPAAGGGGGGVEE, PPEE
+        bordeaux = ('Bordeaux', (2, 2, 6, 2, 1))         #PPAAGGGGGGVVE, PPVE
+        tempranillo = ('Tempranillo', (1, 3, 6, 2, 1))   #PAAAGGGGGGVVE, PAVE
 
         input_data = (rioja, bordeaux, tempranillo)
-        expected = (rioja, tempranillo, bordeaux)
+        expected = (tempranillo, rioja, bordeaux)
 
         self.assertEqual(expected, MajorityJudgement().sort_candidates(input_data))
 
