@@ -34,7 +34,25 @@ procedure by assigning each candidate their tally and taking the maximum.
 """
 
 
-class MajorityJudgement():
+def pop_median(tally):
+    total = sum(tally)
+    assert total > 0
+    median = (total - 1) // 2
+    running_total = 0
+    for i, t in enumerate(tally):
+        running_total += t
+        if running_total > median:
+            tally[i] -= 1
+            result = i
+            break
+    else:
+        assert False
+    while tally and not tally[-1]:
+        tally.pop()
+    return result
+
+
+class MajorityJudgement(object):
     """
     Objects of type MajorityJudgement support comparison and ordering options
     as per the ordering of the described voting algorithm. They expose no other
@@ -84,6 +102,13 @@ class MajorityJudgement():
     def __ge__(self, other):
         return self._compare(other) >= 0
 
+    def grade_list(self):
+        tally = list(self.tally)
+        result = []
+        while tally:
+            result.append(pop_median(tally))
+        return result
+
     def _compare(self, other):
         """
         Return an integer expressing the order relation between self and
@@ -98,23 +123,6 @@ class MajorityJudgement():
 
         self_tallies = list(self.tally)
         other_tallies = list(other.tally)
-
-        def pop_median(tally):
-            total = sum(tally)
-            assert total > 0
-            median = total // 2
-            running_total = 0
-            for i, t in enumerate(tally):
-                running_total += t
-                if running_total > median:
-                    tally[i] -= 1
-                    result = i
-                    break
-            else:
-                assert False
-            while tally and not tally[-1]:
-                tally.pop()
-            return result
 
         while self_tallies and other_tallies:
             self_median = pop_median(self_tallies)
