@@ -1,0 +1,40 @@
+import sys
+import argparse
+
+class ElectionRunner(object):
+    def run_election(self, scheme_name, votes_file):
+        scheme_module = None
+        try:
+            scheme_module = __import__('schemes.%s' % scheme_name, fromlist=['schemes'])
+        except ImportError:
+            raise
+            sys.exit("Could not find scheme with name '%s'" % scheme_name)
+
+        scheme_runner = scheme_module.Runner()
+
+        try:
+            with open(votes_file, 'r') as f:
+                results = scheme_runner.run(f)
+                print "The elected candidates are:\n"
+                for candidate in results.outcome:
+                    print "\t" + candidate
+
+                print "\nFurther information:\n"
+                print scheme_runner.plain_text_report(results.report)
+
+        except IOError:
+            sys.exit("Could not find file: '%s'" % votes_file)
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(
+            description="Run an election from the command line")
+
+    parser.add_argument("scheme_name", help="The name of the voting scheme to use")
+    parser.add_argument("votes_file", help="The name of a file containing the votes in the election")
+
+    args = parser.parse_args()
+
+    ElectionRunner().run_election(args.scheme_name, args.votes_file)
+
+#scheme,
+#votes
