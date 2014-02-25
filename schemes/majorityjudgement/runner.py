@@ -28,10 +28,13 @@ class Runner(SchemeRunner):
         lines = []
         number_of_grades = len(report[0][1])
 
-        lines.append('\tGrade\t| ' + ' | '.join(map(str, range(number_of_grades))))
+        max_candidate_length = max(map(len, [c for c,v in report]))
+
+        lines.append(('\tGrade %s| ' % (' '*(max_candidate_length-5))) + ' | '.join(map(str, range(number_of_grades))))
         lines.append('-' * 100)
+
         for candidate, votes in report:
             tally = " | ".join(map(str, votes))
-            lines.append("\t%s\t| %s" % (candidate, tally))
+            lines.append("\t%s %s| %s" % (candidate, ' '*(max_candidate_length-len(candidate)), tally))
 
         return '\n'.join(lines)

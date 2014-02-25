@@ -35,6 +35,3 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     ElectionRunner().run_election(args.scheme_name, args.votes_file)
-
-#scheme,
-#votes
