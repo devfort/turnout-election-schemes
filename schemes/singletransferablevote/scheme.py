@@ -60,7 +60,7 @@ class SingleTransferableVoteScheme(object):
         reallocated_totals[reallocation_candidate] = quota
         for vote in self.votes:
             if reallocation_candidate == vote[0]:
-                # TODO: Handle no candidate to reallocate vote to
-                reallocated_totals[vote[1]] = reallocated_totals[vote[1]] + reallocated_vote_value
+                if len(vote) > 1:
+                    reallocated_totals[vote[1]] = reallocated_totals[vote[1]] + reallocated_vote_value
 
         return reallocated_totals
