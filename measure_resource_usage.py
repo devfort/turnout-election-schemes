@@ -24,9 +24,14 @@ class MajorityJudgementDataGenerator(object):
 def usage():
     print 'Usage: %s num_grades num_candidates num_voters' % sys.argv[0]
 
-def print_resource_usage():
-    rusage = resource.getrusage(resource.RUSAGE_SELF)
-    print 'utime: %f\t\tstime: %f\t\tmaxrss: %i' % (rusage.ru_utime, rusage.ru_stime, rusage.ru_maxrss)
+def resource_usage():
+    return resource.getrusage(resource.RUSAGE_SELF)
+
+def print_resource_usage(initial, final):
+    utime = final.ru_utime - initial.ru_utime
+    stime = final.ru_stime - initial.ru_stime
+    maxrss = final.ru_maxrss - initial.ru_maxrss
+    print 'utime: %f\t\tstime: %f\t\tmaxrss: %i' % (utime, stime, maxrss)
 
 if __name__ == '__main__':
     try:
@@ -41,9 +46,9 @@ if __name__ == '__main__':
         usage()
         sys.exit(1)
 
-    print_resource_usage()
+    initial_resource_usage = resource_usage()
     aggregator = VoteAggregator(candidates, generator.num_grades)
     aggregated_votes = aggregator.aggregate(votes)
     scheme = MajorityJudgementScheme()
     scheme.sort_candidates(aggregated_votes)
-    print_resource_usage()
+    print_resource_usage(initial_resource_usage, resource_usage())
