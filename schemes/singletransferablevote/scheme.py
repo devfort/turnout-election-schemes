@@ -30,3 +30,6 @@ class SingleTransferableVoteScheme(object):
         # unresolved - hence duplication of parameters
         interim = len(votes)/(seats + 1)
         return math.floor(interim + 1)
+
+    def calculate_totals(self):
+        pass

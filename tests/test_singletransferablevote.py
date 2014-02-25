@@ -68,3 +68,30 @@ class SingeTransferableVoteTest(unittest.TestCase):
         expected_quota = 3
         actual_quota = SingleTransferableVoteScheme(seats, 3, votes).calculate_quota(seats, votes)
         self.assertEqual(expected_quota, actual_quota)
+
+    def test_calculate_totals(self):
+        votes = [
+            ['Norm', 'Anna', 'Steve'],
+            ['Dom', 'Anna', 'Steve', 'Norm', 'Amy'],
+            ['Dom', 'Steve', 'Norm', 'Anna'],
+            ['Norm', 'Steve', 'Amy', 'Anna', 'Dom'],
+            ['Anna', 'Amy', 'Steve', 'Norm', 'Dom'],
+            ['Anna', 'Steve', 'Norm', 'Amy', 'Dom'],
+            ['Anna', 'Dom', 'Steve', 'Norm'],
+            ['Norm', 'Steve', 'Dom', 'Anna', 'Amy'],
+            ['Anna', 'Norm', 'Steve', 'Dom', 'Amy'],
+            ['Anna', 'Norm', 'Steve'],
+        ]
+        candidates = ['Dom', 'Anna', 'Steve', 'Norm', 'Amy']
+        seats = 3
+
+        totals = SingleTransferableVoteScheme(seats, candidates, votes).calculate_totals()
+
+        expected_totals = {
+            'Dom': 2,
+            'Anna': 5,
+            'Norm': 3,
+            'Steve': 0,
+            'Amy': 0,
+        }
+        self.assertEqual(expected_totals, totals)
