@@ -31,7 +31,8 @@ class SingleTransferableVoteScheme(object):
         # either in the method or before it's called
         # unresolved - hence duplication of parameters
         interim = len(votes)/(seats + 1)
-        return math.floor(interim + 1)
+        quota_floor = math.floor(interim + 1)
+        return int(quota_floor)
 
     def calculate_totals(self):
         counts = {}
