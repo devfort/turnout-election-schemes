@@ -11,7 +11,7 @@ class Runner(SchemeRunner):
         max_grade = 0
 
         for row in reader:
-            row_votes = map(int, row[1:])
+            row_votes = map(lambda s: int(s) if s else 0, row[1:])
             max_grade = max(max_grade, max(row_votes))
 
             vote_tuples.append(row_votes)
