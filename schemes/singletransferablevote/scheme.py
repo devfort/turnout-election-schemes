@@ -1,4 +1,5 @@
 import math
+from fractions import Fraction
 
 class SingleTransferableVoteScheme(object):
     """"""
@@ -44,4 +45,21 @@ class SingleTransferableVoteScheme(object):
         return counts
 
     def reallocate_surplus_votes(self, quota, totals):
-        pass
+        # Identify candidate to be reallocated
+        # TODO: Deal with reallocation for multiple candidates
+        reallocation_candidate = None
+        for candidate, total in totals.items():
+            if total > quota:
+                reallocation_candidate = candidate
+
+        reallocated_vote_value = Fraction(totals[reallocation_candidate] - quota, totals[reallocation_candidate])
+
+        # Reallocate candidate's votes
+        reallocated_totals = totals
+        reallocated_totals[reallocation_candidate] = quota
+        for vote in self.votes:
+            if reallocation_candidate == vote[0]:
+                # TODO: Handle no candidate to reallocate vote to
+                reallocated_totals[vote[1]] = reallocated_totals[vote[1]] + reallocated_vote_value
+
+        return reallocated_totals
