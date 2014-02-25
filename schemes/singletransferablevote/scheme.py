@@ -32,4 +32,13 @@ class SingleTransferableVoteScheme(object):
         return math.floor(interim + 1)
 
     def calculate_totals(self):
-        pass
+        counts = {}
+
+        for candidate in self.candidates:
+            counts[candidate] = 0
+
+        for vote in self.votes:
+            first_choice = vote[0]
+            counts[first_choice] = counts[first_choice] + 1
+
+        return counts
