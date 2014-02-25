@@ -12,8 +12,9 @@ class SingleTransferableVoteScheme(object):
         #calculate quota
         quota = self.calculate_quota(self.seats, self.votes)
         #calculate_totals
-        #calculate_totals
+        totals = self.calculate_totals()
         #reallocate surplus votes 0+ times until done
+        reallocated_totals = self.reallocate_surplus_votes(quota, totals)
         #reallocate_surplus_votes
         #if there are not seats winners
             #eliminate loser
