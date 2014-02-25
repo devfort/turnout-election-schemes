@@ -58,3 +58,13 @@ class SingeTransferableVoteTest(unittest.TestCase):
             'Dom',
         ]
         self.assertEqual(final_results, stv.final_results())
+
+    def test_quota(self):
+        seats = 3
+        votes = [
+            ['Red', 'Blue', 'Green'] for i in range(0,10)
+        ]
+
+        expected_quota = 3
+        actual_quota = SingleTransferableVoteScheme(seats, 3, votes).calculate_quota(seats, votes)
+        self.assertEqual(expected_quota, actual_quota)
