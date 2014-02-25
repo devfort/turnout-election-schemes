@@ -69,7 +69,6 @@ class MajorityJudgementTest(unittest.TestCase):
         with self.assertRaises(IncompleteVoteError):
             MajorityJudgementScheme().sort_candidates(input_data)
 
-    #Good Steve
     def test_even_number_of_voters_different_medians(self):
         """
         In this case, there are 6 voters.
@@ -104,7 +103,6 @@ class MajorityJudgementTest(unittest.TestCase):
         with self.assertRaises(NoWinnerError):
             MajorityJudgementScheme().sort_candidates(input_data)
 
-    #Steve 2
     def test_two_identical_losers(self):
         castle = ('Castle', (2,2,1))               #PPAAG
         fort = ('Fort', (0,0,5))                   #GGGGG

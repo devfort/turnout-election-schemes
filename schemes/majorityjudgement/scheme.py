@@ -1,17 +1,22 @@
 from operator import itemgetter
 from schemes.errors import NoWinnerError, IncompleteVoteError
-from schemes.majorityjudgement.candidate import Candidate
+from schemes.majorityjudgement.algorithm import MajorityJudgement as MJCandidate
 
 class MajorityJudgementScheme(object):
     def sort_candidates(self, candidates):
         self._ensure_all_votes_are_of_same_length(map(itemgetter(1), candidates))
 
-        candidate_objects = map(Candidate.from_tuple, candidates)
-        sorted_candidates = self._get_sorted_candidates(candidate_objects)
+        mj_candidates = []
+        for c in candidates:
+            mj_candidate = MJCandidate(c[1])
+            mj_candidate.original_tuple = c
+            mj_candidates.append(mj_candidate)
+
+        sorted_candidates = sorted(mj_candidates, reverse=True)
 
         self._ensure_no_duplicate_winner(sorted_candidates)
 
-        return tuple(c.to_tuple() for c in sorted_candidates)
+        return tuple(c.original_tuple for c in sorted_candidates)
 
     def _get_sorted_candidates(self, candidates):
         return sorted(
@@ -25,5 +30,5 @@ class MajorityJudgementScheme(object):
             raise IncompleteVoteError()
 
     def _ensure_no_duplicate_winner(self, sorted_items):
-        if len(sorted_items) >= 2 and sorted_items[0].majority_value == sorted_items[1].majority_value:
+        if len(sorted_items) >= 2 and not cmp(sorted_items[0], sorted_items[1]):
             raise NoWinnerError()
