@@ -31,9 +31,17 @@ class SingeTransferableVoteTest(unittest.TestCase):
 
         results_1 = stv.run_round()
         expected_round_1 = {
-            'elected': (('Anna', 3), ('Norm', 3)),
-            'hopeful': (('Dom', 2 + Fraction(2,5)), ('Steve', 1 + Fraction(1,5))),
-            'eliminated': (('Amy', Fraction(2,5))),
+            'provisionally_elected': {
+                'Anna': 3,
+                'Norm': 3,
+            },
+            'continuing': {
+                'Dom', 2 + Fraction(2,5),
+                'Steve', 1 + Fraction(1,5),
+            },
+            'excluded': {
+                'Amy', Fraction(2,5),
+            },
         }
 
         self.assertEqual(expected_round_1, results_1)
@@ -41,9 +49,16 @@ class SingeTransferableVoteTest(unittest.TestCase):
 
         results_2 = stv.run_round()
         expected_round_2 = {
-            'elected': (('Anna', 3), ('Norm', 3)),
-            'hopeful': (('Dom', 2 + Fraction(2,5))),
-            'eliminated': (('Steve', 1 + Fraction(3,5))),
+            'provisionally_elected': {
+                'Anna': 3,
+                'Norm': 3,
+            },
+            'continuing': {
+                'Dom': 2 + Fraction(2,5),
+            },
+            'excluded': {
+                'Steve': 1 + Fraction(3,5),
+            },
         }
 
         self.assertEqual(expected_round_2, results_2)
@@ -51,9 +66,13 @@ class SingeTransferableVoteTest(unittest.TestCase):
 
         results_3 = stv.run_round()
         expected_round_3 = {
-            'elected': (('Anna', 3), ('Norm', 3), ('Dom', 3 + Fraction (59,115))),
-            'hopeful': (),
-            'eliminated': (),
+            'provisionally_elected': {
+                'Anna': 3,
+                'Norm': 3,
+                'Dom': 3 + Fraction (59,115),
+            },
+            'continuing': {},
+            'excluded': {},
         }
 
         self.assertEqual(expected_round_3, results_3)
