@@ -11,4 +11,5 @@ class SingleTransferableVoteScheme(object):
     def completed(self):
         return False
 
-        
+   def final_results(self):
+        pass

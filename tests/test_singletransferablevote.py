@@ -22,31 +22,31 @@ class SingeTransferableVoteTest(unittest.TestCase):
         
         stv = SingleTransferableVoteScheme(seats, candidates, votes)
         
-        results_1 = stv.round()
+        results_1 = stv.run_round()
         expected_round_1 = {
             'elected': (('Anna', 3), ('Norm', 3)),
             'hopeful': (('Dom', 2.4), ('Steve', 1.2)),
-            'eleminated': (('Amy', 0.4)),
+            'eliminated': (('Amy', 0.4)),
         }
         
         self.assertEqual(expected_round_1, results_1)
         self.assertFalse(stv.completed())
         
-        results_2 = stv.round()
+        results_2 = stv.run_round()
         expected_round_2 = {
             'elected': (('Anna', 3), ('Norm', 3)),
             'hopeful': (('Dom', 2.4)),
-            'eleminated': (('Steve', 1.6)),
+            'eliminated': (('Steve', 1.6)),
         }
         
         self.assertEqual(expected_round_2, results_2)
         self.assertFalse(stv.completed())
         
-        results_3 = stv.round()
+        results_3 = stv.run_round()
         expected_round_3 = {
             'elected': (('Anna', 3), ('Norm', 3), ('Dom', 3+(59/115))),
             'hopeful': (),
-            'eleminated': (),
+            'eliminated': (),
         }
         
         self.assertEqual(expected_round_3, results_3)
