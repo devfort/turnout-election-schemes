@@ -18,12 +18,6 @@ class MajorityJudgementScheme(object):
 
         return tuple(c.original_tuple for c in sorted_candidates)
 
-    def _get_sorted_candidates(self, candidates):
-        return sorted(
-                    candidates,
-                    lambda c1, c2: cmp(c1.majority_value, c2.majority_value),
-                    reverse=True)
-
     def _ensure_all_votes_are_of_same_length(self, votes):
         unique_vote_sizes = set(map(len, votes))
         if len(unique_vote_sizes) > 1:
