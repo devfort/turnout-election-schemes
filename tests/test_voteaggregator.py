@@ -1,5 +1,5 @@
 import unittest
-from schemes.majorityjudgement import VoteAggregator
+from schemes.majorityjudgement.vote_aggregator import VoteAggregator
 from schemes.errors import IncompleteVoteError, InvalidVoteError
 
 class TestVoteAggregator(unittest.TestCase):
@@ -106,6 +106,3 @@ class TestVoteAggregator(unittest.TestCase):
         # Act/assert
         with self.assertRaises(InvalidVoteError):
             self.aggregator.aggregate(all_votes)
-
-if __name__ == '__main__':
-    unittest.main()

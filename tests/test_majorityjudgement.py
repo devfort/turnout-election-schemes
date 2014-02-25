@@ -1,7 +1,6 @@
 import unittest
-from schemes.majorityjudgement import MajorityJudgement
+from schemes.majorityjudgement.scheme import MajorityJudgementScheme
 from schemes.errors import IncompleteVoteError, NoWinnerError
-
 
 class MajorityJudgementTest(unittest.TestCase):
     """
@@ -17,7 +16,7 @@ class MajorityJudgementTest(unittest.TestCase):
 
         expected_output = (pizza, veggie, burger)
 
-        actual_output = MajorityJudgement().sort_candidates(input_data)
+        actual_output = MajorityJudgementScheme().sort_candidates(input_data)
         self.assertEqual(expected_output, actual_output)
 
     def test_basic_larger_case(self):
@@ -30,7 +29,7 @@ class MajorityJudgementTest(unittest.TestCase):
 
         expected_output = (pizza, indian, burger, chinese)
 
-        actual_output = MajorityJudgement().sort_candidates(input_data)
+        actual_output = MajorityJudgementScheme().sort_candidates(input_data)
         self.assertEqual(expected_output, actual_output)
 
     def test_simple_tie_breaker(self):
@@ -41,7 +40,7 @@ class MajorityJudgementTest(unittest.TestCase):
         input_data = (pizza, burger, veggie)
         expected_output = (burger, veggie, pizza)
 
-        actual_output = MajorityJudgement().sort_candidates(input_data)
+        actual_output = MajorityJudgementScheme().sort_candidates(input_data)
         self.assertEqual(expected_output, actual_output)
 
     def test_complex_tie_breaker(self):
@@ -52,7 +51,7 @@ class MajorityJudgementTest(unittest.TestCase):
         input_data = (rioja, bordeaux, tempranillo)
         expected = (tempranillo, rioja, bordeaux)
 
-        self.assertEqual(expected, MajorityJudgement().sort_candidates(input_data))
+        self.assertEqual(expected, MajorityJudgementScheme().sort_candidates(input_data))
 
     def test_incomplete_vote(self):
         """
@@ -68,7 +67,7 @@ class MajorityJudgementTest(unittest.TestCase):
         input_data = (pizza, burger, veggie)
 
         with self.assertRaises(IncompleteVoteError):
-            MajorityJudgement().sort_candidates(input_data)
+            MajorityJudgementScheme().sort_candidates(input_data)
 
     #Good Steve
     def test_even_number_of_voters_different_medians(self):
@@ -87,7 +86,7 @@ class MajorityJudgementTest(unittest.TestCase):
         input_data = (red, blue, green)
         expected_output = (blue, red, green)
 
-        actual_output = MajorityJudgement().sort_candidates(input_data)
+        actual_output = MajorityJudgementScheme().sort_candidates(input_data)
         self.assertEqual(expected_output, actual_output)
 
     def test_two_identical_winners(self):
@@ -103,7 +102,7 @@ class MajorityJudgementTest(unittest.TestCase):
         input_data = (smith, jones, rogers)
 
         with self.assertRaises(NoWinnerError):
-            MajorityJudgement().sort_candidates(input_data)
+            MajorityJudgementScheme().sort_candidates(input_data)
 
     #Steve 2
     def test_two_identical_losers(self):
@@ -114,8 +113,5 @@ class MajorityJudgementTest(unittest.TestCase):
         input_data = (castle, fort, country_house)
         expected_output = (fort, castle, country_house)
 
-        actual_output = MajorityJudgement().sort_candidates(input_data)
+        actual_output = MajorityJudgementScheme().sort_candidates(input_data)
         self.fail("TODO: Sort this test and implementation out - we need to do something better when there are two losers")
-
-if __name__ == '__main__':
-    unittest.main()
