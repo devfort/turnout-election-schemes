@@ -42,3 +42,6 @@ class SingleTransferableVoteScheme(object):
             counts[first_choice] = counts[first_choice] + 1
 
         return counts
+
+    def reallocate_surplus_votes(self, quota, totals):
+        pass

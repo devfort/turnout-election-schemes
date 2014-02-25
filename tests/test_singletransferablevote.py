@@ -95,3 +95,47 @@ class SingeTransferableVoteTest(unittest.TestCase):
             'Amy': 0,
         }
         self.assertEqual(expected_totals, totals)
+
+    def test_reallocate_surplus_votes(self):
+        """
+        This test is where only one of the candidates has met the quota.
+        We are testing that their surplus votes are redistributed correctly.
+        """
+        votes = [
+            ['Green', 'Blue', 'Yellow', 'Red'],
+            ['Green', 'Blue', 'Yellow', 'Red'],
+            ['Green', 'Blue', 'Yellow', 'Red'],
+            ['Green', 'Blue', 'Yellow', 'Red'],
+            ['Green', 'Blue', 'Red', 'Yellow'],
+            ['Green', 'Blue', 'Red', 'Yellow'],
+            ['Green', 'Yellow', 'Red', 'Blue'],
+            ['Green', 'Yellow', 'Red', 'Blue'],
+            ['Green', 'Yellow', 'Blue', 'Red'],
+            ['Red', 'Blue', 'Yellow', 'Green'],
+            ['Red', 'Blue', 'Green', 'Yellow'],
+            ['Blue', 'Green', 'Red', 'Yellow'],
+            ['Blue', 'Yellow', 'Red', 'Green'],
+            ['Yellow', 'Blue', 'Red', 'Green'],
+            ['Yellow', 'Green', 'Red', 'Blue'],
+            ['Yellow', 'Red', 'Green', 'Blue'],
+            ['Yellow', 'Blue', 'Green', 'Red'],
+        ]
+        quota = 6
+        totals = {
+            'Red': 2,
+            'Green': 9,
+            'Blue': 2,
+            'Yellow': 4,
+        }
+
+        expected_reallocated_totals = {
+            'Red': 2,
+            'Green': 6,
+            'Blue': 4,
+            'Yellow': 5,
+        }
+
+        # TODO passing in None - indicates no validation...
+        test_reallocated_totals = SingleTransferableVoteScheme(None, None, None).reallocate_surplus_votes(quota, totals)
+
+        self.assertEqual(expected_reallocated_totals, test_reallocated_totals)
