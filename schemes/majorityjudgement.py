@@ -1,6 +1,5 @@
 from operator import itemgetter
 from errors import IncompleteVoteError, InvalidVoteError, NoWinnerError
-from mj_david import MajorityJudgement as MJCandidate
 
 class Candidate(object):
     def __init__(self, name, votes):
