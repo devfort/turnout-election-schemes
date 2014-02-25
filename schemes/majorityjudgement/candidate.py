@@ -17,14 +17,9 @@ class Candidate(object):
                     return [i] + self._get_majority_value(self._tally_with_ith_decremented(tally, i))
         return []
 
-    def _tally_with_ith_decremented(self, tally, i_to_change):
-        new_tally = []
-        for i, t in enumerate(tally):
-            if i == i_to_change:
-                new_tally.append(t-1)
-            else:
-                new_tally.append(t)
-
+    def _tally_with_ith_decremented(self, tally, i):
+        new_tally = list(tally)
+        new_tally[i] -= 1
         return tuple(new_tally)
 
     @classmethod
