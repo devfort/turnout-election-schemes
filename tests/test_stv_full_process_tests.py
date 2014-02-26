@@ -84,3 +84,111 @@ class SingleTransferableVoteTest(unittest.TestCase):
             'Dom',
         ]
         self.assertEqual(final_results, stv.final_results())
+
+    def test_exhausted_ballots_should_not_be_used(self):
+        votes = (
+            ('A',),
+            ('B',), ('B',),
+            ('C',), ('C',), ('C',),
+            ('D',), ('D',), ('D',), ('D',),
+            ('E',), ('E',), ('E',), ('E',), ('E',),
+            ('F',), ('F',), ('F',), ('F',), ('F',), ('F',)
+        )
+        candidates = ['A', 'B', 'C', 'D', 'E', 'F']
+        seats = 2
+
+        stv = SingleTransferableVoteScheme(seats, candidates, votes)
+
+        results_1 = stv.run_round()
+        expected_round_1 = {
+            'provisionally_elected': {},
+            'continuing': {
+                'B': 2,
+                'C': 3,
+                'D': 4,
+                'E': 5,
+                'F': 6
+            },
+            'excluded': {
+                'A': 1
+            },
+        }
+
+        self.assertEqual(expected_round_1, results_1)
+        self.assertFalse(stv.completed())
+
+        results_2 = stv.run_round()
+        expected_round_2 = {
+            'provisionally_elected': {},
+            'continuing': {
+                'C': 3,
+                'D': 4,
+                'E': 5,
+                'F': 6
+            },
+            'excluded': {
+                'A': 1,
+                'B': 2
+            },
+        }
+
+        self.assertEqual(expected_round_2, results_2)
+        self.assertFalse(stv.completed())
+
+        results_3 = stv.run_round()
+        expected_round_3 = {
+            'provisionally_elected': {},
+            'continuing': {
+                'D': 4,
+                'E': 5,
+                'F': 6
+            },
+            'excluded': {
+                'A': 1,
+                'B': 2,
+                'C': 3
+            },
+        }
+
+        self.assertEqual(expected_round_3, results_3)
+        self.assertFalse(stv.completed())
+
+        results_4 = stv.run_round()
+        expected_round_4 = {
+            'provisionally_elected': {
+                'F': 6
+            },
+            'continuing': {
+                'E': 5
+            },
+            'excluded': {
+                'A': 1,
+                'B': 2,
+                'C': 3,
+                'D': 4
+            },
+        }
+
+        self.assertEqual(expected_round_4, results_4)
+        self.assertFalse(stv.completed())
+
+        results_5 = stv.run_round()
+        expected_round_5 = {
+            'provisionally_elected': {
+                'E': 5,
+                'F': 6
+            },
+            'continuing': {},
+            'excluded': {
+                'A': 1,
+                'B': 2,
+                'C': 3,
+                'D': 4
+            },
+        }
+
+        self.assertEqual(expected_round_5, results_5)
+        self.assertTrue(stv.completed())
+
+        final_results = ['E', 'F']
+        self.assertEqual(final_results, stv.final_results())
