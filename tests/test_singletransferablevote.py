@@ -174,3 +174,41 @@ class SingeTransferableVoteTest(unittest.TestCase):
         test_reallocated_totals = SingleTransferableVoteScheme(None, None, votes).reallocate_surplus_votes(quota, totals)
 
         self.assertEqual(expected_reallocated_totals, test_reallocated_totals)
+
+    def test_reallocate_candidate_reaching_quota(self):
+        """
+        Test when only one candidate reaches the quota initially, but
+        reallocation causes another to reach quota and require reallocation.
+        """
+        votes = [
+            ['Galaxy', 'Mars', 'Crunchie'],
+            ['Galaxy', 'Mars', 'Crunchie'],
+            ['Galaxy', 'Mars', 'Crunchie'],
+            ['Galaxy', 'Mars', 'Crunchie'],
+            ['Galaxy', 'Mars', 'Crunchie'],
+            ['Galaxy', 'Mars', 'Crunchie'],
+            ['Galaxy', 'Mars', 'Crunchie'],
+            ['Galaxy', 'Mars', 'Crunchie'],
+            ['Mars', 'Crunchie'],
+            ['Mars', 'Crunchie'],
+            ['Mars', 'Crunchie'],
+        ]
+
+        quota = 4
+        totals = {
+            'Mars': 3,
+            'Bounty': 0,
+            'Galaxy': 8,
+            'Crunchie': 0,
+        }
+
+        expected_reallocated_totals = {
+            'Mars': 4,
+            'Bounty': 0,
+            'Galaxy': 4,
+            'Crunchie': 3 + Fraction(15, 22),
+        }
+
+        test_reallocated_totals = SingleTransferableVoteScheme(None, None, votes).reallocate_surplus_votes(quota, totals)
+
+        self.assertEqual(expected_reallocated_totals, test_reallocated_totals)
