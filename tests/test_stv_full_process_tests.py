@@ -30,7 +30,8 @@ class SingleTransferableVoteTest(unittest.TestCase):
 
         stv = SingleTransferableVoteScheme(seats, candidates, votes)
 
-        results_1 = stv.run_round()
+        stv.run_round()
+
         expected_round_1 = {
             'provisionally_elected': {
                 'Anna': 3,
@@ -45,10 +46,11 @@ class SingleTransferableVoteTest(unittest.TestCase):
             },
         }
 
-        self.assertEqual(expected_round_1, results_1)
+        self.assertEqual(expected_round_1, stv.round_results())
         self.assertFalse(stv.completed())
 
-        results_2 = stv.run_round()
+        stv.run_round()
+
         expected_round_2 = {
             'provisionally_elected': {
                 'Anna': 3,
@@ -62,10 +64,11 @@ class SingleTransferableVoteTest(unittest.TestCase):
             },
         }
 
-        self.assertEqual(expected_round_2, results_2)
+        self.assertEqual(expected_round_2, stv.round_results())
         self.assertFalse(stv.completed())
 
-        results_3 = stv.run_round()
+        stv.run_round()
+
         expected_round_3 = {
             'provisionally_elected': {
                 'Anna': 3,
@@ -76,7 +79,7 @@ class SingleTransferableVoteTest(unittest.TestCase):
             'excluded': {},
         }
 
-        self.assertEqual(expected_round_3, results_3)
+        self.assertEqual(expected_round_3, stv.round_results())
         self.assertTrue(stv.completed())
 
         final_results = [
@@ -100,7 +103,8 @@ class SingleTransferableVoteTest(unittest.TestCase):
 
         stv = SingleTransferableVoteScheme(seats, candidates, votes)
 
-        results_1 = stv.run_round()
+        stv.run_round()
+
         expected_round_1 = {
             'provisionally_elected': {},
             'continuing': {
@@ -115,10 +119,11 @@ class SingleTransferableVoteTest(unittest.TestCase):
             },
         }
 
-        self.assertEqual(expected_round_1, results_1)
+        self.assertEqual(expected_round_1, stv.round_results())
         self.assertFalse(stv.completed())
 
-        results_2 = stv.run_round()
+        stv.run_round()
+
         expected_round_2 = {
             'provisionally_elected': {},
             'continuing': {
@@ -132,10 +137,11 @@ class SingleTransferableVoteTest(unittest.TestCase):
             },
         }
 
-        self.assertEqual(expected_round_2, results_2)
+        self.assertEqual(expected_round_2, stv.round_results())
         self.assertFalse(stv.completed())
 
-        results_3 = stv.run_round()
+        stv.run_round()
+
         expected_round_3 = {
             'provisionally_elected': {},
             'continuing': {
@@ -148,10 +154,11 @@ class SingleTransferableVoteTest(unittest.TestCase):
             },
         }
 
-        self.assertEqual(expected_round_3, results_3)
+        self.assertEqual(expected_round_3, stv.round_results())
         self.assertFalse(stv.completed())
 
-        results_4 = stv.run_round()
+        stv.run_round()
+
         expected_round_4 = {
             'provisionally_elected': {
                 'F': 6
@@ -164,10 +171,11 @@ class SingleTransferableVoteTest(unittest.TestCase):
             },
         }
 
-        self.assertEqual(expected_round_4, results_4)
+        self.assertEqual(expected_round_4, stv.round_results())
         self.assertFalse(stv.completed())
 
-        results_5 = stv.run_round()
+        stv.run_round()
+
         expected_round_5 = {
             'provisionally_elected': {
                 'E': 5,
@@ -177,7 +185,7 @@ class SingleTransferableVoteTest(unittest.TestCase):
             'excluded': {},
         }
 
-        self.assertEqual(expected_round_5, results_5)
+        self.assertEqual(expected_round_5, stv.round_results())
         self.assertTrue(stv.completed())
 
         final_results = ['E', 'F']
@@ -226,7 +234,8 @@ class SingleTransferableVoteTest(unittest.TestCase):
 
         stv = SingleTransferableVoteScheme(seats, candidates, votes)
 
-        results_1 = stv.run_round()
+        stv.run_round()
+
         expected_round_1 = {
             'provisionally_elected': {},
             'continuing': {
@@ -241,10 +250,11 @@ class SingleTransferableVoteTest(unittest.TestCase):
             },
         }
 
-        self.assertEqual(expected_round_1, results_1)
+        self.assertEqual(expected_round_1, stv.round_results())
         self.assertFalse(stv.completed())
 
-        results_2 = stv.run_round()
+        stv.run_round()
+
         expected_round_2 = {
             'provisionally_elected': {
                 'F': 16,
@@ -256,7 +266,7 @@ class SingleTransferableVoteTest(unittest.TestCase):
             'excluded': {},
         }
 
-        self.assertEqual(expected_round_2, results_2)
+        self.assertEqual(expected_round_2, stv.round_results())
         self.assertTrue(stv.completed())
 
         final_results = ['F', 'E']
@@ -273,7 +283,8 @@ class SingleTransferableVoteTest(unittest.TestCase):
 
         stv = SingleTransferableVoteScheme(seats, candidates, votes)
 
-        results_1 = stv.run_round()
+        stv.run_round()
+
         expected_round_1 = {
             'provisionally_elected': {
                 'A': 3,
@@ -287,7 +298,7 @@ class SingleTransferableVoteTest(unittest.TestCase):
             },
         }
 
-        self.assertEqual(expected_round_1, results_1)
+        self.assertEqual(expected_round_1, stv.round_results())
         self.assertTrue(stv.completed())
 
         final_results = ['A', 'B', 'C']

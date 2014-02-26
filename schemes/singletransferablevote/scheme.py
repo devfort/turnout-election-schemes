@@ -21,6 +21,9 @@ class SingleTransferableVoteScheme(object):
             #eliminate loser
         #return candidates and their intermediate votes
 
+    def round_results(self):
+        pass
+
     def completed(self):
         return False
 
