@@ -221,6 +221,9 @@ class SingeTransferableVoteTest(unittest.TestCase):
         reallocation causes another to reach quota and require reallocation.
         So two iterations are required, one to reallocate Galaxy's votes and
         then one to reallocated Mars's now surplus votes.
+        Note that the reallocation of Mars's now surplus votes requires their
+        devaluing to have been recorded, i.e. it's not 8 at the end of the
+        first iteration, it's 11 votes worth 8/11ths each.
         """
         votes = [
             ['Galaxy', 'Mars', 'Crunchie'],
@@ -231,24 +234,24 @@ class SingeTransferableVoteTest(unittest.TestCase):
             ['Galaxy', 'Mars', 'Crunchie'],
             ['Galaxy', 'Mars', 'Crunchie'],
             ['Galaxy', 'Mars', 'Crunchie'],
-            ['Mars', 'Crunchie'],
-            ['Mars', 'Crunchie'],
-            ['Mars', 'Crunchie'],
+            ['Galaxy', 'Mars', 'Crunchie'],
+            ['Galaxy', 'Mars', 'Crunchie'],
+            ['Galaxy', 'Mars', 'Bounty'],
         ]
 
-        quota = 4
+        quota = 3
         totals = {
-            'Mars': 3,
+            'Mars': 0,
             'Bounty': 0,
-            'Galaxy': 8,
+            'Galaxy': 11,
             'Crunchie': 0,
         }
 
         expected_reallocated_totals = {
-            'Mars': 4,
-            'Bounty': 0,
-            'Galaxy': 4,
-            'Crunchie': 3
+            'Mars': 3,
+            'Bounty': Fraction(5,11),
+            'Galaxy': 3,
+            'Crunchie': 4 + Fraction(6, 11)
         }
 
         test_reallocated_totals = SingleTransferableVoteScheme(None, None, votes).reallocate_surplus_votes(quota, totals)
