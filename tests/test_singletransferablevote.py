@@ -141,7 +141,39 @@ class SingeTransferableVoteTest(unittest.TestCase):
         to exceed the quota, Anna's surplus votes are not reallocated to Norm but
         instead to voter's next choices.
         """
-        pass
+        votes = [
+            ['Anna', 'Amy', 'Steve', 'Norm', 'Dom'],
+            ['Anna', 'Dom', 'Steve', 'Norm'],
+            ['Anna', 'Norm', 'Steve', 'Dom', 'Amy'],
+            ['Anna', 'Norm', 'Steve'],
+            ['Anna', 'Steve', 'Norm', 'Amy', 'Dom'],
+            ['Dom', 'Anna', 'Steve', 'Norm', 'Amy'],
+            ['Norm', 'Anna', 'Steve'],
+            ['Norm', 'Steve', 'Amy', 'Anna', 'Dom'],
+            ['Norm', 'Steve', 'Dom', 'Anna', 'Amy'],
+            ['Norm', 'Steve', 'Norm', 'Anna'],
+        ]
+
+        quota = 3
+        totals = {
+            'Dom': 1,
+            'Anna': 5,
+            'Steve': 0,
+            'Norm': 4,
+            'Amy': 0,
+        }
+
+        expected_reallocated_totals = {
+            'Dom': 1 + Fraction(2,5),
+            'Anna': 3,
+            'Steve': 2 + Fraction(1,5),
+            'Norm': 3,
+            'Amy': Fraction(2,5),
+        }
+
+        test_reallocated_totals = SingleTransferableVoteScheme(None, None, votes).reallocate_surplus_votes(quota, totals)
+
+        self.assertEqual(expected_reallocated_totals, test_reallocated_totals)
 
     def test_reallocate_multiple_quota_met(self):
         """
