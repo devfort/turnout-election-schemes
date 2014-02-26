@@ -48,17 +48,15 @@ class SingleTransferableVoteScheme(object):
         return counts
 
     def reallocate_surplus_votes(self, quota, totals):
-        # get an ordered list of those who have exceeded the quota
-
-        # Identify candidates whose surplus votes need to be rellocated
-        provisionally_elected_candidates = self.candidates_that_meet_quota(quota, totals)
         reallocated_totals = totals
 
-        for candidate in provisionally_elected_candidates:
+        # get an ordered list of those who meet the quota
+        provisionally_elected_candidates = self.candidates_that_meet_quota(quota, reallocated_totals)
+        highest_candidate = provisionally_elected_candidates[0]
+
+        while reallocated_totals[highest_candidate] > quota:
             # calculate the value of their vote
-            vote_value = Fraction(totals[candidate] - quota, totals[candidate])
-            # reset their total to the max required, i.e. the quota
-            reallocated_totals[candidate] = quota
+            vote_value = Fraction(totals[highest_candidate] - quota, totals[highest_candidate])
 
             # go through all the votes
             # where our candidate is the first choice, find out
@@ -66,12 +64,18 @@ class SingleTransferableVoteScheme(object):
             # other provisonally elected candidates do not received
             # tranferred votes in this way
             for vote in self.votes:
-                if candidate == vote[0]:
+                if highest_candidate == vote[0]:
 
                     for next_preference in vote:
                         if next_preference not in provisionally_elected_candidates:
                             reallocated_totals[next_preference] = reallocated_totals[next_preference] + vote_value
                             break
+
+            # reset their total to the max required, i.e. the quota
+            reallocated_totals[highest_candidate] = quota
+            #reset totals
+            provisionally_elected_candidates = self.candidates_that_meet_quota(quota, reallocated_totals)
+            highest_candidate = provisionally_elected_candidates[0]
 
         return reallocated_totals
 
