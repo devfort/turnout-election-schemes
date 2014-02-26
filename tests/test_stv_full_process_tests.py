@@ -128,7 +128,6 @@ class SingleTransferableVoteTest(unittest.TestCase):
                 'F': 6
             },
             'excluded': {
-                'A': 1,
                 'B': 2
             },
         }
@@ -145,8 +144,6 @@ class SingleTransferableVoteTest(unittest.TestCase):
                 'F': 6
             },
             'excluded': {
-                'A': 1,
-                'B': 2,
                 'C': 3
             },
         }
@@ -163,9 +160,6 @@ class SingleTransferableVoteTest(unittest.TestCase):
                 'E': 5
             },
             'excluded': {
-                'A': 1,
-                'B': 2,
-                'C': 3,
                 'D': 4
             },
         }
@@ -180,12 +174,7 @@ class SingleTransferableVoteTest(unittest.TestCase):
                 'F': 6
             },
             'continuing': {},
-            'excluded': {
-                'A': 1,
-                'B': 2,
-                'C': 3,
-                'D': 4
-            },
+            'excluded': {},
         }
 
         self.assertEqual(expected_round_5, results_5)
@@ -222,6 +211,56 @@ class SingleTransferableVoteTest(unittest.TestCase):
 
         with self.assertRaises(FailedElectionError):
             stv.run_round()
+
+    def test_bulk_eliminiation_resolves_tied_loser_failures(self):
+        votes = (
+            ('A', 'D'), ('A', 'D'),
+            ('B', 'E'), ('B', 'E'),
+            ('C', 'F'), ('C', 'F'), ('C', 'F'),
+            ('D', ), ('D', ), ('D', ), ('D', ), ('D', ), ('D', ), ('D', ), ('D', ),
+            ('E', ), ('E', ), ('E', ), ('E', ), ('E', ), ('E', ), ('E', ), ('E', ), ('E', ), ('E', ), ('E', ), ('E', ),
+            ('F', ), ('F', ), ('F', ), ('F', ), ('F', ), ('F', ), ('F', ), ('F', ), ('F', ), ('F', ), ('F', ), ('F', ), ('F', )
+        )
+        candidates = ['A', 'B', 'C', 'D', 'E', 'F']
+        seats = 2
+
+        stv = SingleTransferableVoteScheme(seats, candidates, votes)
+
+        results_1 = stv.run_round()
+        expected_round_1 = {
+            'provisionally_elected': {},
+            'continuing': {
+                'D': 8,
+                'E': 12,
+                'F': 13
+            },
+            'excluded': {
+                'A': 2,
+                'B': 2,
+                'C': 3
+            },
+        }
+
+        self.assertEqual(expected_round_1, results_1)
+        self.assertFalse(stv.completed())
+
+        results_2 = stv.run_round()
+        expected_round_2 = {
+            'provisionally_elected': {
+                'F': 16,
+                'E': 14
+            },
+            'continuing': {
+                'D': 10
+            },
+            'excluded': {},
+        }
+
+        self.assertEqual(expected_round_2, results_2)
+        self.assertTrue(stv.completed())
+
+        final_results = ['F', 'E']
+        self.assertEqual(final_results, stv.final_results())
 
     def test_candidates_should_be_elected_once_there_is_one_per_vacancy(self):
         votes = (
