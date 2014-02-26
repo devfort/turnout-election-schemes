@@ -1,3 +1,4 @@
+from operator import itemgetter
 import math
 from fractions import Fraction
 
@@ -75,14 +76,11 @@ class SingleTransferableVoteScheme(object):
         return reallocated_totals
 
     def totals_at_least_quota(self, quota, totals):
-        # turn it into a list of tuples
-        totals_list = totals.items()
-        # sort totals_list by votes, highest first
-        # there may be a more readable way to do this
-        sorted_totals = sorted(totals_list, cmp=lambda x,y: cmp(y[1], x[1]))
-
-        reallocation_candidates = []
+        # return names ordered by descending total for those whose total is
+        # greather than or equal to the quota
+        met_quota = []
+        sorted_totals = sorted(totals.items(), key=itemgetter(1), reverse=True) 
         for candidate, total in sorted_totals:
             if total >= quota:
-                reallocation_candidates.append(candidate)
-        return reallocation_candidates
+                met_quota.append(candidate)
+        return met_quota
