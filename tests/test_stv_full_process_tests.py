@@ -192,3 +192,34 @@ class SingleTransferableVoteTest(unittest.TestCase):
 
         final_results = ['E', 'F']
         self.assertEqual(final_results, stv.final_results())
+
+    def test_candidates_should_be_elected_once_there_is_one_per_vacancy(self):
+        votes = (
+            ('A', 'B'), ('A', 'B'), ('A', 'B'), ('A', 'B'), ('A', 'B'),
+            ('B', 'A'), ('B', 'A'), ('B', 'A'), ('B', 'A'), ('B', 'A'),
+            ('C')
+        )
+        candidates = ['A', 'B', 'C', 'D']
+        seats = 3
+
+        stv = SingleTransferableVoteScheme(seats, candidates, votes)
+
+        results_1 = stv.run_round()
+        expected_round_1 = {
+            'provisionally_elected': {
+                'A': 3,
+                'B': 3,
+                'C': 1
+            },
+            'continuing': {
+            },
+            'excluded': {
+                'D': 0
+            },
+        }
+
+        self.assertEqual(expected_round_1, results_1)
+        self.assertTrue(stv.completed())
+
+        final_results = ['A', 'B', 'C']
+        self.assertEqual(final_results, stv.final_results())
