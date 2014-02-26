@@ -51,7 +51,7 @@ class SingleTransferableVoteScheme(object):
         # get an ordered list of those who have exceeded the quota
 
         # Identify candidates whose surplus votes need to be rellocated
-        provisionally_elected_candidates = self.totals_at_least_quota(quota, totals)
+        provisionally_elected_candidates = self.candidates_that_meet_quota(quota, totals)
         reallocated_totals = totals
 
         for candidate in provisionally_elected_candidates:
@@ -75,7 +75,7 @@ class SingleTransferableVoteScheme(object):
 
         return reallocated_totals
 
-    def totals_at_least_quota(self, quota, totals):
+    def candidates_that_meet_quota(self, quota, totals):
         # return names ordered by descending total for those whose total is
         # greather than or equal to the quota
         met_quota = []

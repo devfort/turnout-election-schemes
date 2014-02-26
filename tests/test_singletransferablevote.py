@@ -213,7 +213,16 @@ class SingeTransferableVoteTest(unittest.TestCase):
 
         self.assertEqual(expected_reallocated_totals, test_reallocated_totals)
 
-    def test_at_least_quota_is_ordered(self):
+    def test_candidates_that_meet_quota_is_ordered(self):
+        """
+        We want the method under test to return a list of candidates whose
+        total votes are equal to or exceed the quota, and that list of
+        candidates to be ordered, highest votes first.
+        This test tests a number of these conditions:
+            Mars = 3 (i.e. equal to but not exceeding quota)
+            Galaxy = 8 (i.e. exceeding quota)
+            That the results are returned in order, highest first
+        """
         quota = 3
         totals = {
             'Mars': 3,
@@ -221,8 +230,8 @@ class SingeTransferableVoteTest(unittest.TestCase):
             'Galaxy': 8,
             'Crunchie': 2,
         }
-        expected_totals_exceeding_quota = ['Galaxy', 'Bounty', 'Mars']
+        expected_candidates_meeting_quota = ['Galaxy', 'Bounty', 'Mars']
 
-        actual_totals_exceeding_quota = SingleTransferableVoteScheme(None, None, None).totals_at_least_quota(quota, totals)
+        actual_candidates_meeting_quota = SingleTransferableVoteScheme(None, None, None).candidates_that_meet_quota(quota, totals)
 
-        self.assertEqual(expected_totals_exceeding_quota, actual_totals_exceeding_quota)
+        self.assertEqual(expected_candidates_meeting_quota, actual_candidates_meeting_quota)
