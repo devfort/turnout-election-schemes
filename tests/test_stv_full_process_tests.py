@@ -207,6 +207,22 @@ class SingleTransferableVoteTest(unittest.TestCase):
         with self.assertRaises(FailedElectionError):
             stv.run_round()
 
+    def test_tied_losers_should_cause_election_to_fail(self):
+        votes = (
+            ('A', 'C'), ('A', 'D'),
+            ('B', 'E'), ('B', 'E'),
+            ('C', ), ('C', ), ('C', ),
+            ('D', ), ('D', ), ('D', ),
+            ('E', ), ('E', ), ('E', ),
+        )
+        candidates = ['A', 'B', 'C', 'D', 'E']
+        seats = 3
+
+        stv = SingleTransferableVoteScheme(seats, candidates, votes)
+
+        with self.assertRaises(FailedElectionError):
+            stv.run_round()
+
     def test_candidates_should_be_elected_once_there_is_one_per_vacancy(self):
         votes = (
             ('A', 'B'), ('A', 'B'), ('A', 'B'), ('A', 'B'), ('A', 'B'),
