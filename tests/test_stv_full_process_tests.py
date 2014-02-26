@@ -2,7 +2,7 @@ import unittest
 from schemes.singletransferablevote.scheme import SingleTransferableVoteScheme
 from fractions import Fraction
 
-class SingeTransferableVoteTest(unittest.TestCase):
+class SingleTransferableVoteTest(unittest.TestCase):
     """
     Pulling out the test for the full process from tests for individual methods.
     Expect this to change as method is refined.
