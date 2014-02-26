@@ -1,6 +1,7 @@
 import unittest
-from schemes.singletransferablevote.scheme import SingleTransferableVoteScheme
 from fractions import Fraction
+from schemes.errors import FailedElectionError
+from schemes.singletransferablevote.scheme import SingleTransferableVoteScheme
 
 class SingleTransferableVoteTest(unittest.TestCase):
     """
@@ -192,6 +193,19 @@ class SingleTransferableVoteTest(unittest.TestCase):
 
         final_results = ['E', 'F']
         self.assertEqual(final_results, stv.final_results())
+
+    def test_tied_winners_should_cause_election_to_fail(self):
+        votes = (
+            ('A', 'C'), ('A', 'C'), ('A', 'C'), ('A', 'C'), ('A', 'C'),
+            ('B', 'C'), ('B', 'C'), ('B', 'C'), ('B', 'C'), ('B', 'C'),
+        )
+        candidates = ['A', 'B', 'C', 'D', 'E']
+        seats = 3
+
+        stv = SingleTransferableVoteScheme(seats, candidates, votes)
+
+        with self.assertRaises(FailedElectionError):
+            stv.run_round()
 
     def test_candidates_should_be_elected_once_there_is_one_per_vacancy(self):
         votes = (
