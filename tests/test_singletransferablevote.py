@@ -141,6 +141,14 @@ class SingeTransferableVoteTest(unittest.TestCase):
         to exceed the quota, Anna's surplus votes are not reallocated to Norm but
         instead to voter's next choices.
         """
+        pass
+
+    def test_reallocate_multiple_quota_met(self):
+        """
+        This case is where more than one candidate has met the quota. Anna has
+        exceeded the quota but Norm has only met the quota. So we want to make
+        sure that Anna's surplus votes are not reallocated to Norm.
+        """
         votes = [
             ['Norm', 'Anna', 'Steve'],
             ['Dom', 'Anna', 'Steve', 'Norm', 'Amy'],
@@ -179,6 +187,8 @@ class SingeTransferableVoteTest(unittest.TestCase):
         """
         Test when only one candidate reaches the quota initially, but
         reallocation causes another to reach quota and require reallocation.
+        So two iterations are required, one to reallocate Galaxy's votes and
+        then one to reallocated Mars's now surplus votes.
         """
         votes = [
             ['Galaxy', 'Mars', 'Crunchie'],

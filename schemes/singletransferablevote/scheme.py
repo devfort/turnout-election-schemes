@@ -59,22 +59,14 @@ class SingleTransferableVoteScheme(object):
 
         processed = {}
         while reallocated_totals[highest_candidate] > quota:
-            print '>while', highest_candidate, reallocated_totals
-            print 'processed', processed
             # calculate the value of their vote
             vote_value = Fraction(reallocated_totals[highest_candidate] - quota, reallocated_totals[highest_candidate])
 
-            # go through all the votes
-            # where our candidate is the first choice, find out
-            # who their second choice is and assign them the vote value
-            # other provisonally elected candidates do not received
-            # tranferred votes in this way
+            # go through all the votes for transferring
+            # look here first for efficiency gains!
             for vote in self.votes:
-                print 'vote:', vote
                 # the question is - are they the highest not-yet-processed
                 # candidate on this ballot paper
-                # the problem here is that we are not re-valuing the vote
-                print '>devaluation', highest_candidate, vote[0], processed
                 if highest_candidate in vote:
                     devalued_vote = vote_value
                     # Use slices for this
@@ -86,13 +78,14 @@ class SingleTransferableVoteScheme(object):
                     
                     if evaluate:
                         for candidate in vote:
-                            print 'candidate:', candidate
                             if candidate == highest_candidate:
                                 continue
                             elif processed.has_key(candidate):
                                 devalued_vote = devalued_vote * processed[candidate]
+                            # we do not want to allocate votes to someone else
+                            # who has met the quota - in this case skip, it
+                            # will go to the next preference on this vote
                             elif candidate not in provisionally_elected_candidates:
-                                print 'Reallocating', devalued_vote, 'from', highest_candidate, 'to', candidate
                                 reallocated_totals[candidate] = reallocated_totals[candidate] + devalued_vote
                                 break
 
