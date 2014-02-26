@@ -91,7 +91,7 @@ class SingleTransferableVoteScheme(object):
                                 continue
                             elif processed.has_key(candidate):
                                 devalued_vote = devalued_vote * processed[candidate]
-                            else:
+                            elif candidate not in provisionally_elected_candidates:
                                 print 'Reallocating', devalued_vote, 'from', highest_candidate, 'to', candidate
                                 reallocated_totals[candidate] = reallocated_totals[candidate] + devalued_vote
                                 break
