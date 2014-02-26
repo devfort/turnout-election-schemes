@@ -6,3 +6,6 @@ class NoWinnerError(Exception):
 
 class InvalidVoteError(Exception):
     pass
+
+class FailedElectionError(Exception):
+    pass

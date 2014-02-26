@@ -206,7 +206,7 @@ class SingeTransferableVoteTest(unittest.TestCase):
             'Mars': 4,
             'Bounty': 0,
             'Galaxy': 4,
-            'Crunchie': 3 + Fraction(15, 22),
+            'Crunchie': 3
         }
 
         test_reallocated_totals = SingleTransferableVoteScheme(None, None, votes).reallocate_surplus_votes(quota, totals)
