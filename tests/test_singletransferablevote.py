@@ -212,3 +212,17 @@ class SingeTransferableVoteTest(unittest.TestCase):
         test_reallocated_totals = SingleTransferableVoteScheme(None, None, votes).reallocate_surplus_votes(quota, totals)
 
         self.assertEqual(expected_reallocated_totals, test_reallocated_totals)
+
+    def test_at_least_quota_is_ordered(self):
+        quota = 3
+        totals = {
+            'Mars': 3,
+            'Bounty': 6,
+            'Galaxy': 8,
+            'Crunchie': 2,
+        }
+        expected_totals_exceeding_quota = ['Galaxy', 'Bounty', 'Mars']
+
+        actual_totals_exceeding_quota = SingleTransferableVoteScheme(None, None, None).totals_at_least_quota(quota, totals)
+
+        self.assertEqual(expected_totals_exceeding_quota, actual_totals_exceeding_quota)

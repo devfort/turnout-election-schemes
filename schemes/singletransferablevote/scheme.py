@@ -47,10 +47,10 @@ class SingleTransferableVoteScheme(object):
         return counts
 
     def reallocate_surplus_votes(self, quota, totals):
-        # Identify candidates whose surplus votes need to be rellocated
-        provisionally_elected_candidates = self.initial_tally(quota, totals)
-        print provisionally_elected_candidates
+        # get an ordered list of those who have exceeded the quota
 
+        # Identify candidates whose surplus votes need to be rellocated
+        provisionally_elected_candidates = self.totals_at_least_quota(quota, totals)
         reallocated_totals = totals
 
         for candidate in provisionally_elected_candidates:
@@ -74,10 +74,15 @@ class SingleTransferableVoteScheme(object):
 
         return reallocated_totals
 
-    def initial_tally(self, quota, totals):
-        #TODO this needs to be ordered highest first
+    def totals_at_least_quota(self, quota, totals):
+        # turn it into a list of tuples
+        totals_list = totals.items()
+        # sort totals_list by votes, highest first
+        # there may be a more readable way to do this
+        sorted_totals = sorted(totals_list, cmp=lambda x,y: cmp(y[1], x[1]))
+
         reallocation_candidates = []
-        for candidate, total in totals.items():
+        for candidate, total in sorted_totals:
             if total >= quota:
                 reallocation_candidates.append(candidate)
         return reallocation_candidates
