@@ -59,6 +59,8 @@ class SingleTransferableVoteScheme(object):
 
         processed = {}
         while reallocated_totals[highest_candidate] > quota:
+            print '>while', highest_candidate, reallocated_totals
+            print 'processed', processed
             # calculate the value of their vote
             vote_value = Fraction(reallocated_totals[highest_candidate] - quota, reallocated_totals[highest_candidate])
 
@@ -68,19 +70,31 @@ class SingleTransferableVoteScheme(object):
             # other provisonally elected candidates do not received
             # tranferred votes in this way
             for vote in self.votes:
+                print 'vote:', vote
                 # the question is - are they the highest not-yet-processed
                 # candidate on this ballot paper
                 # the problem here is that we are not re-valuing the vote
-                if highest_candidate == vote[0] or vote[0] in processed:
+                print '>devaluation', highest_candidate, vote[0], processed
+                if highest_candidate in vote:
                     devalued_vote = vote_value
-                    for candidate in vote:
-                        if candidate == highest_candidate:
-                            continue
-                        elif processed.has_key(candidate):
-                            devalued_vote = devalued_vote * processed[candidate]
-                        else:
-                            reallocated_totals[candidate] = reallocated_totals[candidate] + devalued_vote
-                            break
+                    # Use slices for this
+                    evaluate = True
+                    position = vote.index(highest_candidate)
+                    for processed_candidate in vote[:position]:
+                        if not processed.has_key(processed_candidate):
+                            evaluate = False
+                    
+                    if evaluate:
+                        for candidate in vote:
+                            print 'candidate:', candidate
+                            if candidate == highest_candidate:
+                                continue
+                            elif processed.has_key(candidate):
+                                devalued_vote = devalued_vote * processed[candidate]
+                            else:
+                                print 'Reallocating', devalued_vote, 'from', highest_candidate, 'to', candidate
+                                reallocated_totals[candidate] = reallocated_totals[candidate] + devalued_vote
+                                break
 
             # reset their total to the max required, i.e. the quota
             reallocated_totals[highest_candidate] = quota
