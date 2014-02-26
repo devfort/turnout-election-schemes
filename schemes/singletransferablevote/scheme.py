@@ -47,21 +47,37 @@ class SingleTransferableVoteScheme(object):
         return counts
 
     def reallocate_surplus_votes(self, quota, totals):
-        # Identify candidate to be reallocated
-        reallocation_candidates = []
-        for candidate, total in totals.items():
-            if total > quota:
-                reallocation_candidates.append(candidate)
+        # Identify candidates whose surplus votes need to be rellocated
+        provisionally_elected_candidates = self.initial_tally(quota, totals)
+        print provisionally_elected_candidates
 
         reallocated_totals = totals
-        for reallocation_candidate in reallocation_candidates:
-            reallocated_vote_value = Fraction(totals[reallocation_candidate] - quota, totals[reallocation_candidate])
 
-            # Reallocate candidate's votes
-            reallocated_totals[reallocation_candidate] = quota
+        for candidate in provisionally_elected_candidates:
+            # calculate the value of their vote
+            vote_value = Fraction(totals[candidate] - quota, totals[candidate])
+            # reset their total to the max required, i.e. the quota
+            reallocated_totals[candidate] = quota
+
+            # go through all the votes
+            # where our candidate is the first choice, find out
+            # who their second choice is and assign them the vote value
+            # other provisonally elected candidates do not received
+            # tranferred votes in this way
             for vote in self.votes:
-                if reallocation_candidate == vote[0]:
-                    if len(vote) > 1:
-                        reallocated_totals[vote[1]] = reallocated_totals[vote[1]] + reallocated_vote_value
+                if candidate == vote[0]:
+
+                    for next_preference in vote:
+                        if next_preference not in provisionally_elected_candidates:
+                            reallocated_totals[next_preference] = reallocated_totals[next_preference] + vote_value
+                            break
 
         return reallocated_totals
+
+    def initial_tally(self, quota, totals):
+        #TODO this needs to be ordered highest first
+        reallocation_candidates = []
+        for candidate, total in totals.items():
+            if total >= quota:
+                reallocation_candidates.append(candidate)
+        return reallocation_candidates

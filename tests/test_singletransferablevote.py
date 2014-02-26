@@ -173,4 +173,4 @@ class SingeTransferableVoteTest(unittest.TestCase):
 
         test_reallocated_totals = SingleTransferableVoteScheme(None, None, votes).reallocate_surplus_votes(quota, totals)
 
-        #self.assertEqual(expected_reallocated_totals, test_reallocated_totals)
+        self.assertEqual(expected_reallocated_totals, test_reallocated_totals)
