@@ -57,10 +57,10 @@ class SingleTransferableVoteScheme(object):
         provisionally_elected_candidates = self.candidates_that_meet_quota(quota, reallocated_totals)
         highest_candidate = provisionally_elected_candidates[0]
 
-        processed = []
+        processed = {}
         while reallocated_totals[highest_candidate] > quota:
             # calculate the value of their vote
-            vote_value = Fraction(totals[highest_candidate] - quota, totals[highest_candidate])
+            vote_value = Fraction(reallocated_totals[highest_candidate] - quota, reallocated_totals[highest_candidate])
 
             # go through all the votes
             # where our candidate is the first choice, find out
@@ -70,23 +70,21 @@ class SingleTransferableVoteScheme(object):
             for vote in self.votes:
                 # the question is - are they the highest not-yet-processed
                 # candidate on this ballot paper
-
                 # the problem here is that we are not re-valuing the vote
-                #for candidate in vote:
-                #    if candidate == highest_candidate or candidate in processed:
-                #        continue
-                #    else:
-                #        next_preference = candidate
-
-                if highest_candidate == vote[0]:
-                    for next_preference in vote:
-                        if next_preference not in provisionally_elected_candidates:
-                            reallocated_totals[next_preference] = reallocated_totals[next_preference] + vote_value
+                if highest_candidate == vote[0] or vote[0] in processed:
+                    devalued_vote = vote_value
+                    for candidate in vote:
+                        if candidate == highest_candidate:
+                            continue
+                        elif processed.has_key(candidate):
+                            devalued_vote = devalued_vote * processed[candidate]
+                        else:
+                            reallocated_totals[candidate] = reallocated_totals[candidate] + devalued_vote
                             break
 
             # reset their total to the max required, i.e. the quota
             reallocated_totals[highest_candidate] = quota
-            processed.append(highest_candidate)
+            processed[highest_candidate] = vote_value
             #reset totals
             provisionally_elected_candidates = self.candidates_that_meet_quota(quota, reallocated_totals)
             highest_candidate = provisionally_elected_candidates[0]
