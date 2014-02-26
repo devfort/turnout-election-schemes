@@ -128,7 +128,6 @@ class SingleTransferableVoteTest(unittest.TestCase):
                 'F': 6
             },
             'excluded': {
-                'A': 1,
                 'B': 2
             },
         }
@@ -145,8 +144,6 @@ class SingleTransferableVoteTest(unittest.TestCase):
                 'F': 6
             },
             'excluded': {
-                'A': 1,
-                'B': 2,
                 'C': 3
             },
         }
@@ -163,9 +160,6 @@ class SingleTransferableVoteTest(unittest.TestCase):
                 'E': 5
             },
             'excluded': {
-                'A': 1,
-                'B': 2,
-                'C': 3,
                 'D': 4
             },
         }
@@ -180,12 +174,7 @@ class SingleTransferableVoteTest(unittest.TestCase):
                 'F': 6
             },
             'continuing': {},
-            'excluded': {
-                'A': 1,
-                'B': 2,
-                'C': 3,
-                'D': 4
-            },
+            'excluded': {},
         }
 
         self.assertEqual(expected_round_5, results_5)
