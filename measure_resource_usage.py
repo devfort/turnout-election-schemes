@@ -77,7 +77,7 @@ def test_single_transferable_vote(num_vacancies, num_candidates, num_voters):
         scheme.run_round()
         rounds += 1
         if rounds > num_candidates:
-            print 'Election did not complete within %d rounds'
+            print 'Election did not complete within %d rounds' % rounds
             break
 
     print_resource_usage(initial_resource_usage, resource_usage())
