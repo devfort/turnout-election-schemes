@@ -3,6 +3,10 @@ import math
 from fractions import Fraction
 from turnout_election_schemes.schemes.errors import FailedElectionError
 
+class _Random(object):
+    def choice(self, sequence):
+        raise FailedElectionError()
+
 class Vote(object):
     def __init__(self, candidates_running, candidate_preferences):
         self.candidate_preferences = filter(
@@ -67,8 +71,9 @@ class Candidate(object):
         self.elected_quota = quota
 
 class Round(object):
-    def __init__(self, num_vacancies, candidates, votes):
+    def __init__(self, num_vacancies, candidates, votes, random=_Random()):
         self.num_vacancies = num_vacancies
+        self.random = random
         self._prepare_candidates(candidates)
         self._prepare_votes(votes)
 
@@ -203,16 +208,20 @@ class Round(object):
         return lowest_candidates
 
     def _candidate_with_highest_surplus(self):
-        candidates = sorted(
-            self._candidates_with_surplus(),
-            key = lambda c: c.value_of_votes(),
-            reverse = True
+        most_votes = max(map(
+            lambda c: c.value_of_votes(),
+            self._candidates_with_surplus()
+        ))
+
+        candidates = filter(
+            lambda c: c.value_of_votes() == most_votes,
+            self._candidates_with_surplus()
         )
 
-        if len(candidates) > 1 and candidates[0].value_of_votes() == candidates[1].value_of_votes():
-            raise FailedElectionError()
-
-        return candidates[0]
+        if len(candidates) > 1:
+            return self.random.choice(candidates)
+        else:
+            return candidates[0]
 
     def _candidates_with_surplus(self):
         return filter(
@@ -239,15 +248,16 @@ class Round(object):
                 self._continuing_candidates[preferred_candidate].votes.append(vote)
 
 class SingleTransferableVoteScheme(object):
-    def __init__(self, num_vacancies, candidates, votes):
+    def __init__(self, num_vacancies, candidates, votes, random=_Random()):
         self.num_vacancies = num_vacancies
         self.original_candidates = candidates
         self.remaining_candidates = candidates
         self.votes = votes
+        self.random = random
         self.rounds = []
 
     def run_round(self):
-        new_round = Round(self.num_vacancies, self.remaining_candidates, self.votes)
+        new_round = Round(self.num_vacancies, self.remaining_candidates, self.votes, random=self.random)
         new_round.run()
 
         self.remaining_candidates = filter(
