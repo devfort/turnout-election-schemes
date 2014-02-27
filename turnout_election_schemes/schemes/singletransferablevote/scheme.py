@@ -158,13 +158,12 @@ class Round(object):
         self._assign_votes(candidate.votes)
 
     def _exclude_candidates_with_fewest_votes(self):
-        candidates_to_exclude = self._candidates_with_fewest_votes()
-        for candidate in candidates_to_exclude:
+        for candidate in self._candidates_to_exclude():
             self._excluded_candidates.append(candidate)
             del self._continuing_candidates[candidate.candidate_id]
 
     # TO DO rename this to candidates to exclude
-    def _candidates_with_fewest_votes(self):
+    def _candidates_to_exclude(self):
         candidates = sorted(
             self._continuing_candidates.values(),
             key = lambda c: c.value_of_votes()
