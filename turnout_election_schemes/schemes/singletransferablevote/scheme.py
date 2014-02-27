@@ -189,7 +189,7 @@ class Round(object):
         )
 
         if len(candidates) > 1:
-            raise FailedElectionError
+            return self.random.choice(candidates)
         else:
             return candidates[0]
 
