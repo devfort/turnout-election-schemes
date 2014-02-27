@@ -1,6 +1,6 @@
 import math
-from schemes.majorityjudgement.count import MajorityJudgementCount
-from schemes.majorityjudgement.vote_aggregator import VoteAggregator
+from pebblebox_election_schemes.schemes.majorityjudgement.count import MajorityJudgementCount
+from pebblebox_election_schemes.schemes.majorityjudgement.vote_aggregator import VoteAggregator
 
 class Scheme(object):
     identifier = 'majority_judgement'
@@ -8,7 +8,7 @@ class Scheme(object):
     max_winners = 1
     description = "Allows you to choose a single winner whilst taking into account the graded preferences of voters."
 
-    def perform_count(self, candidate_ids, votes_as_json, max_grade):
+    def perform_count(self, candidate_ids, votes_as_json, max_grade=4):
         """
         votes_as_json is a list of tuples, each one being an individual users votes.
         And each vote is a tuple with a numeric grade for each candidate, in the natural
@@ -21,7 +21,8 @@ class Scheme(object):
         succeeded, result = scheme.sort_candidates(aggregated_votes)
         return (
             succeeded,
-            { x[0]: self._candidate_dict(x[1], n) for n, x in enumerate(result) }
+            { x[0]: self._candidate_dict(x[1], n) for n, x in enumerate(result) },
+            (result[0][0],)
         )
 
     def _candidate_dict(self, counts, order):
