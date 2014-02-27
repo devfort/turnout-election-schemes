@@ -54,6 +54,8 @@ class Round(object):
     def run(self):
         self._provisionally_elect_candidates()
 
+        # maybe deal with multiple very low votes here
+
         #import ipdb; ipdb.set_trace()
         while not self.all_vacancies_filled() and self._surplus_exists():
             self._reassign_votes_from_candidate_with_highest_surplus()
@@ -135,18 +137,17 @@ class Round(object):
         self._assign_votes(candidate.votes)
 
     def _exclude_candidates_with_fewest_votes(self):
-        candidates = self._candidates_with_fewest_votes()
-        for candidate in candidates:
+        candidates_to_exclude = self._candidates_with_fewest_votes()
+        for candidate in candidates_to_exclude:
             self._excluded_candidates.append(candidate)
             del self._continuing_candidates[candidate.candidate_id]
 
     def _candidates_with_fewest_votes(self):
-        # get a list of candidates ordered lowest first
+        # get a list of candidates lowest first
         candidates = sorted(
             self._continuing_candidates.values(),
             key = lambda c: c.value_of_votes()
         )
-        # in most cases, only one candidate will be returned here
         lowest_candidates = [candidates[0]]
 
         if len(candidates) > 1 and candidates[0].value_of_votes() == candidates[1].value_of_votes():
