@@ -12,9 +12,18 @@ class Vote(object):
         self.value = 1
 
     def is_exhausted(self):
+        """
+        Returns true if this vote has no preferred candidates still running.
+        """
+
         return len(self.candidate_preferences) == 0
 
     def preference_from(self, candidates):
+        """
+        Returns the most preferred candidate from the list of candidates given,
+        or None if there isn't one.
+        """
+
         matches = filter(lambda candidate: candidate in candidates, self.candidate_preferences)
 
         if len(matches) > 0:
@@ -30,13 +39,25 @@ class Candidate(object):
         self.elected_quota = 0
 
     def value_of_votes(self):
+        """
+        Get the total value of all votes allocated to this candidate. If the
+        candidate has been marked as elected by calling devalue_votes() then
+        this method returns the cached quota value given to it.
+        """
+
         if self.elected:
             return self.elected_quota
         else:
             return reduce(lambda a, b: a + b, map(lambda v: v.value, self.votes), 0)
 
     def devalue_votes(self, quota):
-        # devalue the votes based on the ratio of surplus to quota
+        """
+        Devalue the value of each of this candidate's votes based on the ratio
+        of surplus to quota. Since we're devaluing the votes, we also cache the
+        quota and mark ourselves as elected so we can reply correctly to calls
+        to value_to_votes().
+        """
+
         total_value = self.value_of_votes()
         surplus_ratio = Fraction(total_value - quota, total_value)
         for vote in self.votes:
