@@ -54,12 +54,13 @@ class Round(object):
         self._provisionally_elect_candidates()
 
         #import ipdb; ipdb.set_trace()
-        while self._surplus_exists():
+        while not self.all_vacancies_filled() and self._surplus_exists():
             self._reassign_votes_from_candidate_with_highest_surplus()
             self._provisionally_elect_candidates()
 
-        self._exclude_candidate_with_fewest_votes()
-        self._provisionally_elect_candidates()
+        if not self.all_vacancies_filled():
+            self._exclude_candidate_with_fewest_votes()
+            self._provisionally_elect_candidates()
 
     def results(self):
         #import ipdb; ipdb.set_trace()
@@ -68,6 +69,9 @@ class Round(object):
             'continuing': self._continuing(),
             'excluded': self._excluded()
         }
+
+    def all_vacancies_filled(self):
+        return self._remaining_vacancies() == 0
 
     def _prepare_candidates(self, candidates):
         self.continuing_candidates = {candidate: Candidate(candidate) for candidate in candidates}
@@ -176,6 +180,9 @@ class SingleTransferableVoteScheme(object):
 
     def round_results(self):
         return self.latest_round.results()
+
+    def completed(self):
+        return self.latest_round.all_vacancies_filled()
 
 class __SingleTransferableVoteScheme(object):
     """"""

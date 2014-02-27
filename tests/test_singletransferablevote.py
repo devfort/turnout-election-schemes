@@ -16,6 +16,20 @@ class SingeTransferableVoteTest(unittest.TestCase):
         quota = Round(3, ('Red', 'Blue', 'Green'), votes).quota
         self.assertEqual(3, quota)
 
+
+    def test_all_vacancies_filled(self):
+        """
+        Test that Round can report when all the vacancies have been filled
+        """
+        candidates = ['Red', 'Green', 'Blue']
+        vacancies = 3
+        votes = ()
+        stv_round = Round(vacancies, candidates, votes)
+        stv_round.run()
+
+        self.assertTrue(stv_round.all_vacancies_filled())
+
+
     def test_calculate_initial_totals(self):
         """
         Tests the initial assignment of votes
