@@ -7,22 +7,22 @@ except ImportError:
 PACKAGE = 'pebblebox_election_schemes'
 VERSION = '0.1'
 
-package_data = {'pebblebox_election_schemes': [ '*.py', '**/*.py', '**/**/*.py']}
-
 setup(
     name=PACKAGE, version=VERSION,
     description="Contains election schemes for pebblebox.",
     packages=[
         'pebblebox_election_schemes',
+        'pebblebox_election_schemes.schemes',
+        'pebblebox_election_schemes.schemes.majorityjudgement',
+        'pebblebox_election_schemes.schemes.singletransferablevote',
     ],
-    package_data=package_data,
     license='MIT',
     author='/dev/fort 9',
     author_email='contact@devfort.com',
     install_requires=[
     ],
-    url = 'https://github.com/devfort/pebblebox_election_schemes',
-    classifiers = [
+    url='https://github.com/devfort/pebblebox_election_schemes',
+    classifiers=[
         'Intended Audience :: Developers',
         'Framework :: Django',
         'License :: OSI Approved :: MIT License',
