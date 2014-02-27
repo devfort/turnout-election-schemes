@@ -1,5 +1,6 @@
 import unittest
 from fractions import Fraction
+from schemes.errors import FailedElectionError
 from schemes.singletransferablevote.scheme import Round, SingleTransferableVoteScheme
 
 class SingleTransferableVoteUnitTest(unittest.TestCase):
@@ -357,10 +358,9 @@ class SingleTransferableVoteUnitTest(unittest.TestCase):
 
     def test_exclude_candidate_with_fewest_votes(self):
         """
-        Check that the method moves the candidate with the fewest vote total is
-        moved to excluded
+        Check that the method moves the candidate with the fewest vote total
+        to excluded
         """
-
         votes = (
             ('Chocolate', ), ('Chocolate', ), ('Chocolate', ), ('Chocolate', ),
             ('Fruit', ), ('Fruit', ),
@@ -385,6 +385,38 @@ class SingleTransferableVoteUnitTest(unittest.TestCase):
         stv_round._exclude_candidate_with_fewest_votes()
 
         self.assertEqual(expected_results, stv_round.results())
+
+    def test_tied_fewest_candidates_throws_Failed_Election(self):
+        """
+        If candidates are tied for last place, it throws a Failed
+        Election error
+        """
+        votes = (
+            ('Chocolate', ), ('Chocolate', ), ('Chocolate', ), ('Chocolate', ), ('Chocolate', ),
+            ('Crisps', ), ('Crisps', ), ('Crisps', ), ('Crisps', ), ('Crisps', ),
+            ('Popcorn', ), ('Popcorn', ), ('Popcorn', ), ('Popcorn', ),
+            ('Fruit', ), ('Fruit', ),
+            ('Vegetables', ), ('Vegetables', )
+        )
+
+        candidates = ('Vegetables', 'Chocolate', 'Fruit')
+        vacancies = 3
+
+        expected_results = {
+            'provisionally_elected': {},
+            'continuing': {
+                'Chocolate': 4,
+                'Fruit': 2
+            },
+            'excluded': {
+                'Vegetables': 1
+            }
+        }
+
+        stv_round = Round(vacancies, candidates, votes)
+
+        with self.assertRaises(FailedElectionError):
+            stv_round._exclude_candidate_with_fewest_votes()
 
     def test_elected_candidates_returns_the_correct_order(self):
         """
