@@ -1,6 +1,6 @@
 import random
 import resource
-from schemes.majorityjudgement import VoteAggregator, MajorityJudgementScheme
+from schemes.majorityjudgement import VoteAggregator, MajorityJudgementCount
 from schemes.singletransferablevote import SingleTransferableVoteScheme
 import sys
 
@@ -58,7 +58,7 @@ def test_majority_judgement(num_grades, num_candidates, num_voters):
 
     aggregator = VoteAggregator(candidates, generator.num_grades)
     aggregated_votes = aggregator.aggregate(votes)
-    scheme = MajorityJudgementScheme()
+    scheme = MajorityJudgementCount()
     scheme.sort_candidates(aggregated_votes)
 
     print_resource_usage(initial_resource_usage, resource_usage())
