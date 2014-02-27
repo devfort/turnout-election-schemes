@@ -114,6 +114,7 @@ class MajorityJudgementTest(unittest.TestCase):
         self.assertEqual(actual_output[2], jones)
         self.assertFalse(success)
 
+    @unittest.skip('Not yet implemented')
     def test_two_identical_losers(self):
         castle = ('Castle', (2,2,1))               #PPAAG
         fort = ('Fort', (0,0,5))                   #GGGGG

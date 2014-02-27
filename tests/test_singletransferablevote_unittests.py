@@ -1,9 +1,98 @@
 import unittest
-from schemes.singletransferablevote.scheme import *
 from fractions import Fraction
+from schemes.errors import FailedElectionError
+from schemes.singletransferablevote.scheme import Round, SingleTransferableVoteScheme
 
-class SingeTransferableVoteTest(unittest.TestCase):
+class SingleTransferableVoteUnitTest(unittest.TestCase):
 
+    # Moved from full test - should be unit test
+    def test_exhausted_ballots_should_not_be_used(self):
+        votes = (
+            ('A',),
+            ('B',), ('B',),
+            ('C',), ('C',), ('C',),
+            ('D',), ('D',), ('D',), ('D',),
+            ('E',), ('E',), ('E',), ('E',), ('E',),
+            ('F',), ('F',), ('F',), ('F',), ('F',), ('F',)
+        )
+        candidates = ['A', 'B', 'C', 'D', 'E', 'F']
+        seats = 2
+
+        stv = SingleTransferableVoteScheme(seats, candidates, votes)
+
+        stv.run_round()
+
+        expected_round_1 = {
+            'provisionally_elected': {},
+            'continuing': {
+                'B': 2,
+                'C': 3,
+                'D': 4,
+                'E': 5,
+                'F': 6
+            },
+            'excluded': {
+                'A': 1
+            },
+        }
+
+        self.assertEqual(expected_round_1, stv.round_results())
+        self.assertFalse(stv.completed())
+
+        stv.run_round()
+
+        expected_round_2 = {
+            'provisionally_elected': {},
+            'continuing': {
+                'C': 3,
+                'D': 4,
+                'E': 5,
+                'F': 6
+            },
+            'excluded': {
+                'B': 2
+            },
+        }
+
+        self.assertEqual(expected_round_2, stv.round_results())
+        self.assertFalse(stv.completed())
+
+        stv.run_round()
+
+        expected_round_3 = {
+            'provisionally_elected': {},
+            'continuing': {
+                'D': 4,
+                'E': 5,
+                'F': 6
+            },
+            'excluded': {
+                'C': 3
+            },
+        }
+
+        self.assertEqual(expected_round_3, stv.round_results())
+        self.assertFalse(stv.completed())
+
+        stv.run_round()
+
+        expected_round_4 = {
+            'provisionally_elected': {
+                'F': 6,
+                'E': 5
+            },
+            'continuing': {
+            },
+            'excluded': {
+                'D': 4
+            },
+        }
+
+        self.assertEqual(expected_round_4, stv.round_results())
+        self.assertTrue(stv.completed())
+
+        final_results = ['F', 'E']
+        self.assertEqual(final_results, stv.final_results())
     def test_quota(self):
         """
         Tests a simple quota case. Quota should be 10 / (3 + 1) + 1 => 3
@@ -15,47 +104,6 @@ class SingeTransferableVoteTest(unittest.TestCase):
 
         quota = Round(3, ('Red', 'Blue', 'Green'), votes).quota
         self.assertEqual(3, quota)
-
-
-    def test_all_vacancies_filled(self):
-        """
-        Test that Round can report when all the vacancies have been filled
-        """
-        candidates = ['Red', 'Green', 'Blue']
-        vacancies = 3
-        votes = ()
-        stv_round = Round(vacancies, candidates, votes)
-        stv_round.run()
-
-        self.assertTrue(stv_round.all_vacancies_filled())
-
-    def test_all_vacancies_not_filled(self):
-        """
-        Test that Round can report when all the vacancies haven't been filled
-        """
-        candidates = ['Red', 'Green', 'Blue', 'Yellow', 'Mauve']
-        vacancies = 2
-        votes = (
-            ('Red',),
-            ('Red',),
-            ('Red',),
-            ('Red',),
-            ('Red',),
-            ('Green',),
-            ('Green',),
-            ('Green',),
-            ('Green',),
-            ('Blue',),
-            ('Blue',),
-            ('Blue',),
-            ('Yellow',),
-            ('Yellow',),
-            ('Mauve',),
-        )
-        stv_round = Round(vacancies, candidates, votes)
-        stv_round.run()
-
-        self.assertFalse(stv_round.all_vacancies_filled())
 
     def test_calculate_initial_totals(self):
         """
@@ -196,6 +244,58 @@ class SingeTransferableVoteTest(unittest.TestCase):
 
         self.assertEqual(expected_reallocated_totals, stv_round.results())
 
+    def test_reallocation_of_votes_skips_provisionally_elected_candidates(self):
+        """
+        When multiple candidates have been provisionally elected their surplus
+        votes needs to be reallocated for each of them in turn. When the
+        reallocation happens it should skip over the other candidates that have
+        already been provisionally elected.
+        """
+
+        vacancies = 3
+        candidates = ('Anna', 'Amy', 'Steve', 'Norm', 'Dom')
+        votes = 5 * (('Anna', 'Norm', 'Amy'), ) + \
+                3 * (('Norm', 'Amy'), ) + \
+                2 * (('Amy', ), )
+
+        # Both Anna and Norm should be elected initially
+        stv_round = Round(vacancies, candidates, votes)
+        stv_round._provisionally_elect_candidates()
+
+        expected_results = {
+            'provisionally_elected': {
+                'Anna': 5,
+                'Norm': 3
+            },
+            'continuing': {
+                'Amy': 2,
+                'Dom': 0,
+                'Steve': 0
+            },
+            'excluded': {}
+        }
+
+        self.assertEqual(expected_results, stv_round.results())
+
+        # When we reallocate Anna's votes they should go straight to Amy,
+        # rather than going to Norm
+        stv_round._reassign_votes_from_candidate_with_highest_surplus()
+
+        expected_results = {
+            'provisionally_elected': {
+                'Anna': 3,
+                'Norm': 3
+            },
+            'continuing': {
+                'Amy': 4,
+                'Dom': 0,
+                'Steve': 0
+            },
+            'excluded': {}
+        }
+
+        self.assertEqual(expected_results, stv_round.results())
+
     def test_exhausted_votes_are_not_reallocated(self):
         """
         A vote with no further preferences for other candidates shouldn't be
@@ -234,56 +334,6 @@ class SingeTransferableVoteTest(unittest.TestCase):
 
         self.assertEqual(expected_results, stv_round.results())
 
-    def test_reallocate_multiple_surplus_votes_simple(self):
-        """
-        This is to test the case where more than one candidate has exceeded
-        the quota so there are more than one set of surplus votes to reallocate.
-        This is the simple case - the reallocated votes go to people who have not
-        and will not exceed the quota.
-        i.e. testing that it does the right thing, the right number of times
-        Tests a full round so includes excluded candidates.
-        """
-        votes = [
-            ['Oranges', 'Pears'],
-            ['Oranges', 'Pears'],
-            ['Oranges', 'Pears'],
-            ['Oranges', 'Pears'],
-            ['Oranges', 'Pears'],
-            ['Oranges', 'Pears'],
-            ['Oranges', 'Pears'],
-            ['Oranges', 'Pears'],
-            ['Oranges', 'Pears'],
-            ['Apples', 'Lemons'],
-            ['Apples', 'Lemons'],
-            ['Apples', 'Lemons'],
-            ['Apples', 'Lemons'],
-            ['Apples', 'Lemons'],
-            ['Apples', 'Lemons'],
-            ['Apples', 'Lemons'],
-        ]
-
-        candidates = ['Oranges', 'Apples', 'Pears', 'Lemons', 'Limes']
-        vacancies = 3
-
-        expected_totals = {
-            'provisionally_elected': {
-                'Oranges': 5,
-                'Apples': 5,
-            },
-            'continuing': {
-                'Pears': 4,
-                'Lemons': 2,
-            },
-            'excluded': {
-                'Limes': 0
-            }
-        }
-
-        stv_round = Round(vacancies, candidates, votes)
-        stv_round.run()
-
-        self.assertEqual(expected_totals, stv_round.results())
-
     def test_reallocate_fractional_votes(self):
         """
         This is the case where a candidates second preferences are split
@@ -318,145 +368,8 @@ class SingeTransferableVoteTest(unittest.TestCase):
 
         self.assertEqual(expected_result, stv_round.results())
 
-    def test_reallocate_multiple_surplus_votes(self):
-        """
-        This is to test the case where more than one candidate has exceeded
-        the quota so there are more than one set of surplus votes to reallocate.
-        This is the more complex case. In this case, Anna has the most votes so
-        we process her surplus votes first, but since Norm also has enough votes
-        to exceed the quota, Anna's surplus votes are not reallocated to Norm but
-        instead to voter's next choices.
 
-        Initial total votes are:
-            'Dom': 1,
-            'Anna': 5,
-            'Steve': 0,
-            'Norm': 4,
-            'Amy': 0,
 
-        """
-        votes = [
-            ['Anna', 'Amy', 'Steve', 'Norm', 'Dom'],
-            ['Anna', 'Dom', 'Steve', 'Norm'],
-            ['Anna', 'Norm', 'Steve', 'Dom', 'Amy'],
-            ['Anna', 'Norm', 'Steve'],
-            ['Anna', 'Steve', 'Norm', 'Amy', 'Dom'],
-            ['Dom', 'Anna', 'Steve', 'Norm', 'Amy'],
-            ['Norm', 'Anna', 'Steve'],
-            ['Norm', 'Steve', 'Amy', 'Anna', 'Dom'],
-            ['Norm', 'Steve', 'Dom', 'Anna', 'Amy'],
-            ['Norm', 'Steve', 'Norm', 'Anna'],
-        ]
-        candidates = ['Anna', 'Amy', 'Steve', 'Norm', 'Dom']
-        vacancies = 3
-
-        expected_results = {
-            'provisionally_elected': {
-                'Anna': 3,
-                'Norm': 3
-            },
-            'continuing': {
-                'Dom': 1 + Fraction(2,5),
-                'Steve': 2 + Fraction(1,5),
-            },
-            'excluded': {
-                'Amy': Fraction(2,5),
-            }
-        }
-
-        stv_round = Round(vacancies, candidates, votes)
-        stv_round.run()
-
-        self.assertEqual(expected_results, stv_round.results())
-
-    def test_reallocate_multiple_quota_met(self):
-        """
-        This case is where more than one candidate has met the quota. Anna has
-        exceeded the quota but Norm has only met the quota. So we want to make
-        sure that Anna's surplus votes are not reallocated to Norm.
-        Initial totals:
-            'Dom': 2,
-            'Anna': 5,
-            'Steve': 0,
-            'Norm': 3,
-            'Amy': 0,
-        """
-        votes = [
-            ['Norm', 'Anna', 'Steve'],
-            ['Dom', 'Anna', 'Steve', 'Norm', 'Amy'],
-            ['Dom', 'Steve', 'Norm', 'Anna'],
-            ['Norm', 'Steve', 'Amy', 'Anna', 'Dom'],
-            ['Anna', 'Amy', 'Steve', 'Norm', 'Dom'],
-            ['Anna', 'Steve', 'Norm', 'Amy', 'Dom'],
-            ['Anna', 'Dom', 'Steve', 'Norm'],
-            ['Norm', 'Steve', 'Dom', 'Anna', 'Amy'],
-            ['Anna', 'Norm', 'Steve', 'Dom', 'Amy'],
-            ['Anna', 'Norm', 'Steve'],
-        ]
-        candidates = ['Norm', 'Anna', 'Dom', 'Amy', 'Steve']
-        vacancies = 3
-
-        stv_round = Round(vacancies, candidates, votes)
-        stv_round.run()
-
-        expected_results = {
-            'provisionally_elected': {
-                'Anna': 3,
-                'Norm': 3
-            },
-            'continuing': {
-                'Dom': 2 + Fraction(2,5),
-                'Steve': 1 + Fraction(1,5),
-            },
-            'excluded': {
-                'Amy': Fraction(2,5),
-            }
-        }
-
-        self.assertEqual(expected_results, stv_round.results())
-
-    def test_reallocate_candidate_reaching_quota(self):
-        """
-        Test when only one candidate reaches the quota initially, but
-        reallocation causes another to reach quota and require reallocation.
-        So two iterations are required, one to reallocate Galaxy's votes and
-        then one to reallocated Mars's now surplus votes.
-        Note that the reallocation of Mars's now surplus votes requires their
-        devaluing to have been recorded, i.e. it's not 8 at the end of the
-        first iteration, it's 11 votes worth 8/11ths each.
-        """
-        votes = [
-            ['Galaxy', 'Mars', 'Crunchie'],
-            ['Galaxy', 'Mars', 'Crunchie'],
-            ['Galaxy', 'Mars', 'Crunchie'],
-            ['Galaxy', 'Mars', 'Crunchie'],
-            ['Galaxy', 'Mars', 'Crunchie'],
-            ['Galaxy', 'Mars', 'Crunchie'],
-            ['Galaxy', 'Mars', 'Crunchie'],
-            ['Galaxy', 'Mars', 'Crunchie'],
-            ['Galaxy', 'Mars', 'Crunchie'],
-            ['Galaxy', 'Mars', 'Crunchie'],
-            ['Galaxy', 'Mars', 'Bounty'],
-        ]
-
-        quota = 3
-        totals = {
-            'Mars': 0,
-            'Bounty': 0,
-            'Galaxy': 11,
-            'Crunchie': 0,
-        }
-
-        expected_reallocated_totals = {
-            'Mars': 3,
-            'Bounty': Fraction(5,11),
-            'Galaxy': 3,
-            'Crunchie': 4 + Fraction(6, 11)
-        }
-
-        test_reallocated_totals = SingleTransferableVoteScheme(None, None, votes).reallocate_surplus_votes(quota, totals)
-
-        self.assertEqual(expected_reallocated_totals, test_reallocated_totals)
 
     def test_candidates_with_surplus_is_ordered(self):
         """
@@ -497,10 +410,9 @@ class SingeTransferableVoteTest(unittest.TestCase):
 
     def test_exclude_candidate_with_fewest_votes(self):
         """
-        Check that the method moves the candidate with the fewest vote total is
-        moved to excluded
+        Check that the method moves the candidate with the fewest vote total
+        to excluded
         """
-
         votes = (
             ('Chocolate', ), ('Chocolate', ), ('Chocolate', ), ('Chocolate', ),
             ('Fruit', ), ('Fruit', ),
@@ -525,6 +437,70 @@ class SingeTransferableVoteTest(unittest.TestCase):
         stv_round._exclude_candidate_with_fewest_votes()
 
         self.assertEqual(expected_results, stv_round.results())
+
+    def test_tied_fewest_candidates_throws_Failed_Election(self):
+        """
+        If candidates are tied for last place, it throws a Failed
+        Election error
+        """
+        votes = (
+            ('Chocolate', ), ('Chocolate', ), ('Chocolate', ), ('Chocolate', ), ('Chocolate', ),
+            ('Crisps', ), ('Crisps', ), ('Crisps', ), ('Crisps', ), ('Crisps', ),
+            ('Popcorn', ), ('Popcorn', ), ('Popcorn', ), ('Popcorn', ),
+            ('Fruit', ), ('Fruit', ),
+            ('Vegetables', ), ('Vegetables', )
+        )
+
+        candidates = ('Vegetables', 'Chocolate', 'Fruit', 'Crisps', 'Popcorn')
+        vacancies = 3
+
+        stv_round = Round(vacancies, candidates, votes)
+
+        with self.assertRaises(FailedElectionError):
+            stv_round._exclude_candidate_with_fewest_votes()
+
+    def test_tied_really_low_fewest_candidates_throws_Failed_Election(self):
+        """
+        In this case, two candidates are tied for last place but they
+        have so few votes they couldn't win.
+        The calculation here is - if their votes added together are not enough
+        to reach the next candidate or the quota, we don't have to worry about
+        who to eliminate first and can eliminate both at the same time.  At the
+        moment this just throws a FailedElection error.
+        """
+        votes = (
+            ('Beatles', ), ('Beatles', ), ('Beatles', ), ('Beatles', ),
+            ('Beatles', ), ('Beatles', ), ('Beatles', ), ('Beatles', ),
+            ('Beatles', ), ('Beatles', ), ('Beatles', ), ('Beatles', ),
+            ('Rolling Stones', ), ('Rolling Stones', ), ('Rolling Stones', ),
+            ('Rolling Stones', ), ('Rolling Stones', ), ('Rolling Stones', ),
+            ('Rolling Stones', ), ('Rolling Stones', ), ('Rolling Stones', ),
+            ('Killers', ), ('Killers', ), ('Killers', ), ('Killers', ),
+            ('Killers', ),
+            ('Blur', ), ('Blur', ),
+            ('Pulp', ), ('Pulp', )
+        )
+
+        candidates = ('Beatles', 'Rolling Stones', 'Killers', 'Blur', 'Pulp')
+        vacancies = 3
+
+        ideal_results = {
+            'provisionally_elected': {
+                'Beatles': 12,
+                'Rolling Stones': 9,
+                'Killers': 5,
+            },
+            'continuing': {},
+            'excluded': {
+                'Blur': 2,
+                'Pulp': 2
+            }
+        }
+
+        stv_round = Round(vacancies, candidates, votes)
+
+        with self.assertRaises(FailedElectionError):
+            stv_round._exclude_candidate_with_fewest_votes()
 
     def test_elected_candidates_returns_the_correct_order(self):
         """

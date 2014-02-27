@@ -1,6 +1,7 @@
 from operator import itemgetter
 import math
 from fractions import Fraction
+from schemes.errors import FailedElectionError
 
 class Vote(object):
     def __init__(self, candidates_running, candidate_preferences):
@@ -129,7 +130,7 @@ class Round(object):
         return len(self._candidates_with_surplus()) > 0
 
     def _reassign_votes_from_candidate_with_highest_surplus(self):
-        candidate = self._candidates_with_surplus()[0]
+        candidate = self._candidate_with_highest_surplus()
         candidate.devalue_votes(self.quota)
         self._assign_votes(candidate.votes)
 
@@ -144,18 +145,27 @@ class Round(object):
             key = lambda c: c.value_of_votes()
         )
 
+        if len(candidates) > 1 and candidates[0].value_of_votes() == candidates[1].value_of_votes():
+            raise FailedElectionError()
+
+        return candidates[0]
+
+    def _candidate_with_highest_surplus(self):
+        candidates = sorted(
+            self._candidates_with_surplus(),
+            key = lambda c: c.value_of_votes(),
+            reverse = True
+        )
+
+        if len(candidates) > 1 and candidates[0].value_of_votes() == candidates[1].value_of_votes():
+            raise FailedElectionError()
+
         return candidates[0]
 
     def _candidates_with_surplus(self):
-        candidates = filter(
+        return filter(
             lambda c: c.value_of_votes() > self.quota,
             self._provisionally_elected_candidates
-        )
-
-        return sorted(
-            candidates,
-            key = lambda c: c.value_of_votes(),
-            reverse = True
         )
 
     def _provisionally_elected(self):
