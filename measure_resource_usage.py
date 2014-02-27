@@ -70,7 +70,7 @@ def test_single_transferable_vote(num_vacancies, num_candidates, num_voters):
 
     initial_resource_usage = resource_usage()
 
-    scheme = SingleTransferableVoteScheme(num_vacancies, candidates, votes)
+    scheme = SingleTransferableVoteScheme(num_vacancies, candidates, votes, random = random)
     rounds = 0
 
     while not scheme.completed():
