@@ -29,6 +29,33 @@ class SingeTransferableVoteTest(unittest.TestCase):
 
         self.assertTrue(stv_round.all_vacancies_filled())
 
+    def test_all_vacancies_not_filled(self):
+        """
+        Test that Round can report when all the vacancies haven't been filled
+        """
+        candidates = ['Red', 'Green', 'Blue', 'Yellow', 'Mauve']
+        vacancies = 2
+        votes = (
+            ('Red',),
+            ('Red',),
+            ('Red',),
+            ('Red',),
+            ('Red',),
+            ('Green',),
+            ('Green',),
+            ('Green',),
+            ('Green',),
+            ('Blue',),
+            ('Blue',),
+            ('Blue',),
+            ('Yellow',),
+            ('Yellow',),
+            ('Mauve',),
+        )
+        stv_round = Round(vacancies, candidates, votes)
+        stv_round.run()
+
+        self.assertFalse(stv_round.all_vacancies_filled())
 
     def test_calculate_initial_totals(self):
         """
