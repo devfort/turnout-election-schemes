@@ -1,6 +1,6 @@
-from schemes.scheme_runner import SchemeRunner
-from schemes.election_results import ElectionResults
-from schemes.majorityjudgement import VoteAggregator, MajorityJudgementCount
+from pebblebox_election_schemes.schemes.scheme_runner import SchemeRunner
+from pebblebox_election_schemes.schemes.election_results import ElectionResults
+from pebblebox_election_schemes.schemes.majorityjudgement import VoteAggregator, MajorityJudgementCount
 import csv
 
 class Runner(SchemeRunner):

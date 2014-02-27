@@ -1,6 +1,6 @@
 import math
-from schemes.majorityjudgement.count import MajorityJudgementCount
-from schemes.majorityjudgement.vote_aggregator import VoteAggregator
+from pebblebox_election_schemes.schemes.majorityjudgement.count import MajorityJudgementCount
+from pebblebox_election_schemes.schemes.majorityjudgement.vote_aggregator import VoteAggregator
 
 class Scheme(object):
     identifier = 'majority_judgement'

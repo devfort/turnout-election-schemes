@@ -7,13 +7,15 @@ except ImportError:
 PACKAGE = 'pebblebox_election_schemes'
 VERSION = '0.1'
 
+package_data = {'pebblebox_election_schemes': [ '*.py', '**/*.py', '**/**/*.py']}
+
 setup(
     name=PACKAGE, version=VERSION,
     description="Contains election schemes for pebblebox.",
     packages=[
         'pebblebox_election_schemes',
     ],
-    package_data={},
+    package_data=package_data,
     license='MIT',
     author='/dev/fort 9',
     author_email='contact@devfort.com',
