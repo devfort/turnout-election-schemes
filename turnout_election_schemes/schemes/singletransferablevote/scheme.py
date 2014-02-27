@@ -80,7 +80,7 @@ class Round(object):
             self._provisionally_elect_candidates()
 
         if not self.all_vacancies_filled():
-            self._exclude_candidate_with_fewest_votes()
+            self._exclude_candidates_with_fewest_votes()
             self._provisionally_elect_candidates()
 
     def results(self):
@@ -152,21 +152,55 @@ class Round(object):
         candidate.devalue_votes(self.quota)
         self._assign_votes(candidate.votes)
 
-    def _exclude_candidate_with_fewest_votes(self):
-        candidate = self._candidate_with_fewest_votes()
-        self._excluded_candidates.append(candidate)
-        del self._continuing_candidates[candidate.candidate_id]
+    def _exclude_candidates_with_fewest_votes(self):
+        candidates_to_exclude = self._candidates_with_fewest_votes()
+        for candidate in candidates_to_exclude:
+            self._excluded_candidates.append(candidate)
+            del self._continuing_candidates[candidate.candidate_id]
 
-    def _candidate_with_fewest_votes(self):
+    # TO DO rename this to candidates to exclude
+    def _candidates_with_fewest_votes(self):
         candidates = sorted(
             self._continuing_candidates.values(),
             key = lambda c: c.value_of_votes()
         )
 
-        if len(candidates) > 1 and candidates[0].value_of_votes() == candidates[1].value_of_votes():
-            raise FailedElectionError()
+        # either do bulk exclusion or just lowest
+        lowest_candidates = self._bulk_exclusions()
+        if len(lowest_candidates) < 1:
+            lowest_candidates = [candidates[0]]
 
-        return candidates[0]
+            if len(candidates) > 1 and candidates[0].value_of_votes() == candidates[1].value_of_votes():
+                raise FailedElectionError
+
+        return lowest_candidates
+
+    def _bulk_exclusions(self):
+        # If there are multiple candidates with very low
+        # votes, we can exclude a few of them at once
+        # get a list of candidates lowest first
+        candidates = sorted(
+            self._continuing_candidates.values(),
+            key = lambda c: c.value_of_votes()
+        )
+
+        # deal with multiple very low votes
+        total_lowest_votes = 0
+        lowest_candidates = []
+        for index in range(0,len(candidates)):
+            candidate = candidates[index]
+            total_lowest_votes += candidate.value_of_votes()
+            # if the two together are less than the quota
+            if total_lowest_votes < self.quota:
+                # see if they are less than the next candidates'
+                next_candidate = candidates[index+1]
+                if total_lowest_votes <= next_candidate.value_of_votes():
+                    print candidate.candidate_id
+                    lowest_candidates.append(candidate)
+                else:
+                    break
+
+        return lowest_candidates
 
     def _candidate_with_highest_surplus(self):
         candidates = sorted(
