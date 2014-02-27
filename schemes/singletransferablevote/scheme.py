@@ -14,7 +14,12 @@ class Vote(object):
         return len(self.candidate_preferences) == 0
 
     def preference_from(self, candidates):
-        return filter(lambda candidate: candidate in candidates, self.candidate_preferences)[0]
+        matches = filter(lambda candidate: candidate in candidates, self.candidate_preferences)
+
+        if len(matches) > 0:
+            return matches[0]
+        else:
+            return None
 
 class Candidate(object):
     def __init__(self, candidate_id):
@@ -126,7 +131,8 @@ class Round(object):
         #import ipdb; ipdb.set_trace()
         for vote in votes:
             preferred_candidate = vote.preference_from(self.candidates.keys())
-            self.candidates[preferred_candidate].votes.append(vote)
+            if preferred_candidate is not None:
+                self.candidates[preferred_candidate].votes.append(vote)
 
 class SingleTransferableVoteScheme(object):
     def __init__(self, num_vacancies, candidates, votes):
