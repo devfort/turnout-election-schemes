@@ -127,7 +127,7 @@ class MajorityJudgementTest(unittest.TestCase):
 
 class TestMajorityJudgementScheme(unittest.TestCase):
     def test_basic_small_case(self):
-        steve = (1,2,3,4)
+        steve = (1,2,3,3)
         bob =   (3,2,2,1)
         dave =  (1,1,0,3)
         votes = [steve, bob, dave]
@@ -137,10 +137,10 @@ class TestMajorityJudgementScheme(unittest.TestCase):
                 9:   {'grade': 1, 'order': 3, 'counts': (0,2,0,1,0)},
                 17:  {'grade': 2, 'order': 1, 'counts': (0,1,2,0,0)},
                 24:  {'grade': 2, 'order': 2, 'counts': (1,0,1,1,0)},
-                101: {'grade': 3, 'order': 0, 'counts': (0,1,0,1,1)}}
+                101: {'grade': 3, 'order': 0, 'counts': (0,1,0,2,0)}}
 
         scheme = Scheme()
-        success, result = scheme.perform_count(candidate_ids, [steve, bob, dave])
+        success, result = scheme.perform_count(candidate_ids, [steve, bob, dave], 4)
 
         self.assertTrue(success)
         self.assertEqual(expected_output, result)

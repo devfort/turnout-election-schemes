@@ -8,14 +8,12 @@ class Scheme(object):
     max_winners = 1
     description = "Allows you to choose a single winner whilst taking into account the graded preferences of voters."
 
-    def perform_count(self, candidate_ids, votes_as_json):
+    def perform_count(self, candidate_ids, votes_as_json, max_grade):
         """
         votes_as_json is a list of tuples, each one being an individual users votes.
         And each vote is a tuple with a numeric grade for each candidate, in the natural
         order of the candidates.
         """
-        max_grade = max(map(max, votes_as_json))
-
         aggregator = VoteAggregator(candidate_ids, max_grade + 1)
         aggregated_votes = aggregator.aggregate(votes_as_json)
 
