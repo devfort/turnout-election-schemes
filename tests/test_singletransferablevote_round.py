@@ -98,7 +98,6 @@ class RoundTest(unittest.TestCase):
         with self.assertRaises(FailedElectionError):
             stv_round.run()
 
-    #@unittest.skip('bulk elimination functionality not yet written')
     def test_bulk_eliminiation_resolves_tied_loser_failures(self):
         votes = (
             ('A', 'D'), ('A', 'D'),
