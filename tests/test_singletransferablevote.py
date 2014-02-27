@@ -116,52 +116,93 @@ class SingeTransferableVoteTest(unittest.TestCase):
 
         self.assertEqual(expected_reallocated_totals, stv_round.results())
 
+    def test_exhuasted_votes_are_not_reallocated(self):
+        self.assertFalse(True)
+
+
     def test_reallocate_multiple_surplus_votes_simple(self):
         """
         This is to test the case where more than one candidate has exceeded
         the quota so there are more than one set of surplus votes to reallocate.
         This is the simple case - the reallocated votes go to people who have not
         and will not exceed the quota.
+        i.e. testing that it does the right thing, the right number of times
+        Tests a full round so includes excluded candidates.
         """
         votes = [
             ['Oranges', 'Pears'],
             ['Oranges', 'Pears'],
             ['Oranges', 'Pears'],
-            ['Oranges', 'Lemons'],
-            ['Oranges'],
-            ['Oranges'],
-            ['Oranges'],
-            ['Oranges'],
-            ['Oranges'],
-            ['Apples', 'Pears'],
+            ['Oranges', 'Pears'],
+            ['Oranges', 'Pears'],
+            ['Oranges', 'Pears'],
+            ['Oranges', 'Pears'],
+            ['Oranges', 'Pears'],
+            ['Oranges', 'Pears'],
             ['Apples', 'Lemons'],
-            ['Apples'],
-            ['Apples'],
-            ['Apples'],
-            ['Apples'],
-            ['Apples'],
+            ['Apples', 'Lemons'],
+            ['Apples', 'Lemons'],
+            ['Apples', 'Lemons'],
+            ['Apples', 'Lemons'],
+            ['Apples', 'Lemons'],
+            ['Apples', 'Lemons'],
         ]
 
-        quota = 5
-        totals = {
-            'Oranges': 9,
-            'Apples': 7,
-            'Pears': 0,
-            'Lemons': 0,
-            'Limes':0,
+        candidates = ['Oranges', 'Apples', 'Pears', 'Lemons', 'Limes']
+        vacancies = 3
+
+        expected_totals = {
+            'provisionally_elected': {
+                'Oranges': 5,
+                'Apples': 5,
+            },
+            'continuing': {
+                'Pears': 4,
+                'Lemons': 2,
+            },
+            'excluded': {
+                'Limes': 0
+            }
         }
 
-        expected_reallocated_totals = {
-            'Oranges': 5,
-            'Apples': 5,
-            'Pears': 1 + Fraction(13,21),
-            'Lemons': Fraction(46, 63),
-            'Limes':0,
+        stv_round = Round(vacancies, candidates, votes)
+        stv_round.run()
+
+        self.assertEqual(expected_totals, stv_round.results())
+
+    def test_reallocate_fractional_votes(self):
+        """
+        This is the case where a candidates second preferences are split
+        between other candidates so fractions of votes are reallocated
+        """
+        votes = [
+            ['Amy', 'James'],
+            ['Amy', 'James'],
+            ['Amy', 'James'],
+            ['Amy', 'James'],
+            ['Amy', 'David'],
+            ['Amy', 'David'],
+            ['Amy', 'David'],
+        ]
+        candidates = ['Amy', 'James', 'David']
+        vacancies = 2
+
+        expected_result = {
+            'provisionally_elected': {
+                'Amy': 3
+            },
+            'continuing': {
+                'James': Fraction(16,7),
+                'David': Fraction(12,7)
+            },
+            'excluded': {}
         }
 
-        test_reallocated_totals = SingleTransferableVoteScheme(None, None, votes).reallocate_surplus_votes(quota, totals)
+        stv_round = Round(vacancies, candidates, votes)
+        stv_round._provisionally_elect_candidates()
+        stv_round._reassign_votes_from_candidate_with_highest_surplus()
 
-        self.assertEqual(expected_reallocated_totals, test_reallocated_totals)
+        self.assertEqual(expected_result, stv_round.results())
 
     def test_reallocate_multiple_surplus_votes(self):
         """
