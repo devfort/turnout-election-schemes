@@ -1,6 +1,6 @@
 import unittest
-from schemes.singletransferablevote.scheme import *
 from fractions import Fraction
+from schemes.singletransferablevote.scheme import Round, SingleTransferableVoteScheme
 
 class SingleTransferableVoteUnitTest(unittest.TestCase):
 
