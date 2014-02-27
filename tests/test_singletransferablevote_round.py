@@ -1,9 +1,9 @@
 import unittest
-from schemes.singletransferablevote.scheme import Round
 from fractions import Fraction
+from schemes.errors import FailedElectionError
+from schemes.singletransferablevote.scheme import Round
 
 class RoundTest(unittest.TestCase):
-    # TODO this should be a one-round test
     def test_all_vacancies_filled(self):
         """
         Test that Round can report when all the vacancies have been filled
@@ -16,7 +16,6 @@ class RoundTest(unittest.TestCase):
 
         self.assertTrue(stv_round.all_vacancies_filled())
 
-    # TODO this should be a one-round test
     def test_all_vacancies_not_filled(self):
         """
         Test that Round can report when all the vacancies haven't been filled
@@ -45,7 +44,6 @@ class RoundTest(unittest.TestCase):
 
         self.assertFalse(stv_round.all_vacancies_filled())
 
-    # TODO this should be a one-round test
     def test_reallocate_multiple_surplus_votes_simple(self):
         """
         This is to test the case where more than one candidate has exceeded
@@ -96,7 +94,6 @@ class RoundTest(unittest.TestCase):
 
         self.assertEqual(expected_totals, stv_round.results())
 
-    # TODO this is a one-round test
     def test_reallocate_multiple_surplus_votes(self):
         """
         This is to test the case where more than one candidate has exceeded
@@ -148,7 +145,6 @@ class RoundTest(unittest.TestCase):
 
         self.assertEqual(expected_results, stv_round.results())
 
-    # TODO this is a one-round test
     def test_reallocate_multiple_quota_met(self):
         """
         This case is where more than one candidate has met the quota. Anna has
@@ -195,21 +191,19 @@ class RoundTest(unittest.TestCase):
 
         self.assertEqual(expected_results, stv_round.results())
 
-    # TODO: this should be a one-round test
     def test_tied_winners_should_cause_election_to_fail(self):
         votes = (
             ('A', 'C'), ('A', 'C'), ('A', 'C'), ('A', 'C'), ('A', 'C'),
             ('B', 'C'), ('B', 'C'), ('B', 'C'), ('B', 'C'), ('B', 'C'),
         )
         candidates = ['A', 'B', 'C', 'D', 'E']
-        seats = 3
+        vacancies = 3
 
-        stv = SingleTransferableVoteScheme(seats, candidates, votes)
+        stv_round = Round(vacancies, candidates, votes)
 
         with self.assertRaises(FailedElectionError):
-            stv.run_round()
+            stv_round.run()
 
-    # TODO: this should be a one-round test
     def test_tied_losers_should_cause_election_to_fail(self):
         votes = (
             ('A', 'C'), ('A', 'D'),
@@ -219,14 +213,14 @@ class RoundTest(unittest.TestCase):
             ('E', ), ('E', ), ('E', ),
         )
         candidates = ['A', 'B', 'C', 'D', 'E']
-        seats = 3
+        vacancies = 3
 
-        stv = SingleTransferableVoteScheme(seats, candidates, votes)
+        stv_round = Round(vacancies, candidates, votes)
 
         with self.assertRaises(FailedElectionError):
-            stv.run_round()
+            stv_round.run()
 
-    # TODO: this should be a one-round test
+    @unittest.skip('bulk elimination functionality not yet written')
     def test_bulk_eliminiation_resolves_tied_loser_failures(self):
         votes = (
             ('A', 'D'), ('A', 'D'),
@@ -237,13 +231,13 @@ class RoundTest(unittest.TestCase):
             ('F', ), ('F', ), ('F', ), ('F', ), ('F', ), ('F', ), ('F', ), ('F', ), ('F', ), ('F', ), ('F', ), ('F', ), ('F', )
         )
         candidates = ['A', 'B', 'C', 'D', 'E', 'F']
-        seats = 2
+        vacancies = 2
 
-        stv = SingleTransferableVoteScheme(seats, candidates, votes)
+        stv_round = Round(vacancies, candidates, votes)
 
-        stv.run_round()
+        stv_round.run()
 
-        expected_round_1 = {
+        expected_results = {
             'provisionally_elected': {},
             'continuing': {
                 'D': 8,
@@ -257,29 +251,8 @@ class RoundTest(unittest.TestCase):
             },
         }
 
-        self.assertEqual(expected_round_1, stv.round_results())
-        self.assertFalse(stv.completed())
+        self.assertEqual(expected_results, stv_round.round_results())
 
-        stv.run_round()
-
-        expected_round_2 = {
-            'provisionally_elected': {
-                'F': 16,
-                'E': 14
-            },
-            'continuing': {
-                'D': 10
-            },
-            'excluded': {},
-        }
-
-        self.assertEqual(expected_round_2, stv.round_results())
-        self.assertTrue(stv.completed())
-
-        final_results = ['F', 'E']
-        self.assertEqual(final_results, stv.final_results())
-
-    # TODO: this should be a one-round test
     def test_candidates_should_be_elected_once_there_is_one_per_vacancy(self):
         votes = (
             ('A', 'B'), ('A', 'B'), ('A', 'B'), ('A', 'B'), ('A', 'B'), ('A', 'B'),
@@ -287,13 +260,9 @@ class RoundTest(unittest.TestCase):
             ('C')
         )
         candidates = ['A', 'B', 'C', 'D']
-        seats = 3
+        vacancies = 3
 
-        stv = SingleTransferableVoteScheme(seats, candidates, votes)
-
-        stv.run_round()
-
-        expected_round_1 = {
+        expected_results = {
             'provisionally_elected': {
                 'A': 3,
                 'B': 3,
@@ -306,8 +275,8 @@ class RoundTest(unittest.TestCase):
             },
         }
 
-        self.assertEqual(expected_round_1, stv.round_results())
-        self.assertTrue(stv.completed())
+        stv = Round(vacancies, candidates, votes)
+        stv.run()
 
-        final_results = ['A', 'B', 'C']
-        self.assertEqual(final_results, stv.final_results())
+        self.assertEqual(expected_results, stv.results())
+        self.assertTrue(stv.all_vacancies_filled())
