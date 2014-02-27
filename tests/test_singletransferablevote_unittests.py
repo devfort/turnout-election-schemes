@@ -399,17 +399,49 @@ class SingleTransferableVoteUnitTest(unittest.TestCase):
             ('Vegetables', ), ('Vegetables', )
         )
 
-        candidates = ('Vegetables', 'Chocolate', 'Fruit')
+        candidates = ('Vegetables', 'Chocolate', 'Fruit', 'Crisps', 'Popcorn')
         vacancies = 3
 
-        expected_results = {
-            'provisionally_elected': {},
-            'continuing': {
-                'Chocolate': 4,
-                'Fruit': 2
+        stv_round = Round(vacancies, candidates, votes)
+
+        with self.assertRaises(FailedElectionError):
+            stv_round._exclude_candidate_with_fewest_votes()
+
+    def test_tied_really_low_fewest_candidates_throws_Failed_Election(self):
+        """
+        In this case, two candidates are tied for last place but they
+        have so few votes they couldn't win.
+        The calculation here is - if their votes added together are not enough
+        to reach the next candidate or the quota, we don't have to worry about
+        who to eliminate first and can eliminate both at the same time.  At the
+        moment this just throws a FailedElection error.
+        """
+        votes = (
+            ('Beatles', ), ('Beatles', ), ('Beatles', ), ('Beatles', ),
+            ('Beatles', ), ('Beatles', ), ('Beatles', ), ('Beatles', ),
+            ('Beatles', ), ('Beatles', ), ('Beatles', ), ('Beatles', ),
+            ('Rolling Stones', ), ('Rolling Stones', ), ('Rolling Stones', ),
+            ('Rolling Stones', ), ('Rolling Stones', ), ('Rolling Stones', ),
+            ('Rolling Stones', ), ('Rolling Stones', ), ('Rolling Stones', ),
+            ('Killers', ), ('Killers', ), ('Killers', ), ('Killers', ),
+            ('Killers', ),
+            ('Blur', ), ('Blur', ),
+            ('Pulp', ), ('Pulp', )
+        )
+
+        candidates = ('Beatles', 'Rolling Stones', 'Killers', 'Blur', 'Pulp')
+        vacancies = 3
+
+        ideal_results = {
+            'provisionally_elected': {
+                'Beatles': 12,
+                'Rolling Stones': 9,
+                'Killers': 5,
             },
+            'continuing': {},
             'excluded': {
-                'Vegetables': 1
+                'Blur': 2,
+                'Pulp': 2
             }
         }
 
