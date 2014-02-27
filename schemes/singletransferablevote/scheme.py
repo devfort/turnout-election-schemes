@@ -69,12 +69,12 @@ class Round(object):
         }
 
     def _prepare_candidates(self, candidates):
-        self.candidates = {candidate: Candidate(candidate) for candidate in candidates}
+        self.continuing_candidates = {candidate: Candidate(candidate) for candidate in candidates}
         self.provisionally_elected_candidates = []
         self.excluded_candidates = []
 
     def _prepare_votes(self, votes):
-        self.votes = map(lambda v: Vote(self.candidates.keys(), v), votes)
+        self.votes = map(lambda v: Vote(self.continuing_candidates.keys(), v), votes)
         self.exhausted_votes = filter(lambda v: v.is_exhausted(), self.votes)
         self.unexhausted_votes = filter(lambda v: not v.is_exhausted(), self.votes)
 
@@ -90,12 +90,12 @@ class Round(object):
     def _provisionally_elect_candidates(self):
         candidates_at_quota = filter(
             lambda c: c.value_of_votes() >= self.quota,
-            self.candidates.values()
+            self.continuing_candidates.values()
         )
 
         for candidate in candidates_at_quota:
             self.provisionally_elected_candidates.append(candidate)
-            del self.candidates[candidate.candidate_id]
+            del self.continuing_candidates[candidate.candidate_id]
 
     def _surplus_exists(self):
         return len(self._candidates_with_surplus()) > 0
@@ -108,11 +108,11 @@ class Round(object):
     def _exclude_candidate_with_fewest_votes(self):
         candidate = self._candidate_with_fewest_votes()
         self.excluded_candidates.append(candidate)
-        del self.candidates[candidate.candidate_id]
+        del self.continuing_candidates[candidate.candidate_id]
 
     def _candidate_with_fewest_votes(self):
         candidates = sorted(
-            self.candidates.values(),
+            self.continuing_candidates.values(),
             key = lambda c: c.value_of_votes()
         )
 
@@ -134,7 +134,7 @@ class Round(object):
         return self._candidate_dict_for_results(self.provisionally_elected_candidates)
 
     def _continuing(self):
-        return self._candidate_dict_for_results(self.candidates.values())
+        return self._candidate_dict_for_results(self.continuing_candidates.values())
 
     def _excluded(self):
         return self._candidate_dict_for_results(self.excluded_candidates)
@@ -145,9 +145,9 @@ class Round(object):
     def _assign_votes(self, votes):
         #import ipdb; ipdb.set_trace()
         for vote in votes:
-            preferred_candidate = vote.preference_from(self.candidates.keys())
+            preferred_candidate = vote.preference_from(self.continuing_candidates.keys())
             if preferred_candidate is not None:
-                self.candidates[preferred_candidate].votes.append(vote)
+                self.continuing_candidates[preferred_candidate].votes.append(vote)
 
 class SingleTransferableVoteScheme(object):
     def __init__(self, num_vacancies, candidates, votes):
