@@ -44,45 +44,25 @@ class RoundTest(unittest.TestCase):
         stv_round.run()
         self.assertFalse(stv_round.all_vacancies_filled())
 
-    def test_reallocate_multiple_surplus_votes_simple(self):
+    def test_reallocation_of_surplus_votes(self):
         """
-        This is to test the case where more than one candidate has exceeded
-        the quota so there are more than one set of surplus votes to reallocate.
-        This is the simple case - the reallocated votes go to people who have not
-        and will not exceed the quota.
-        i.e. testing that it does the right thing, the right number of times
-        Tests a full round so includes excluded candidates.
+        A single round should reallocate surplus votes from all candidates that
+        have a surplus and then exclude the candidate with the fewest votes.
         """
-        votes = [
-            ['Oranges', 'Pears'],
-            ['Oranges', 'Pears'],
-            ['Oranges', 'Pears'],
-            ['Oranges', 'Pears'],
-            ['Oranges', 'Pears'],
-            ['Oranges', 'Pears'],
-            ['Oranges', 'Pears'],
-            ['Oranges', 'Pears'],
-            ['Oranges', 'Pears'],
-            ['Apples', 'Lemons'],
-            ['Apples', 'Lemons'],
-            ['Apples', 'Lemons'],
-            ['Apples', 'Lemons'],
-            ['Apples', 'Lemons'],
-            ['Apples', 'Lemons'],
-            ['Apples', 'Lemons'],
-        ]
 
-        candidates = ['Oranges', 'Apples', 'Pears', 'Lemons', 'Limes']
         vacancies = 3
+        candidates = ('Oranges', 'Apples', 'Pears', 'Lemons', 'Limes')
+        votes = 9 * (('Oranges', 'Pears'), ) + \
+                7 * (('Apples', 'Lemons'), )
 
-        expected_totals = {
+        expected_results = {
             'provisionally_elected': {
                 'Oranges': 5,
-                'Apples': 5,
+                'Apples': 5
             },
             'continuing': {
                 'Pears': 4,
-                'Lemons': 2,
+                'Lemons': 2
             },
             'excluded': {
                 'Limes': 0
@@ -91,8 +71,7 @@ class RoundTest(unittest.TestCase):
 
         stv_round = Round(vacancies, candidates, votes)
         stv_round.run()
-
-        self.assertEqual(expected_totals, stv_round.results())
+        self.assertEqual(expected_results, stv_round.results())
 
     def test_reallocate_multiple_surplus_votes(self):
         """
