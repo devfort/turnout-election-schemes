@@ -145,6 +145,9 @@ class Round(object):
             key = lambda c: c.value_of_votes()
         )
 
+        if len(candidates) > 1 and candidates[0].value_of_votes() == candidates[1].value_of_votes():
+            raise FailedElectionError()
+
         return candidates[0]
 
     def _candidate_with_highest_surplus(self):
