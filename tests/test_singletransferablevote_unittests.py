@@ -1,7 +1,7 @@
 import unittest
 from fractions import Fraction
-from schemes.errors import FailedElectionError
-from schemes.singletransferablevote.scheme import Round, SingleTransferableVoteScheme
+from turnout_election_schemes.schemes.errors import FailedElectionError
+from turnout_election_schemes.schemes.singletransferablevote.scheme import Round, SingleTransferableVoteScheme
 
 class SingleTransferableVoteUnitTest(unittest.TestCase):
 

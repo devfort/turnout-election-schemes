@@ -1,5 +1,5 @@
 from operator import itemgetter
-from pebblebox_election_schemes.schemes.errors import IncompleteVoteError, InvalidVoteError
+from turnout_election_schemes.schemes.errors import IncompleteVoteError, InvalidVoteError
 
 class VoteAggregator(object):
     def __init__(self, candidate_names, number_of_grades):

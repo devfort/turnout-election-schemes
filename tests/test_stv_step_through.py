@@ -1,6 +1,6 @@
 import unittest
 from fractions import Fraction
-from schemes.singletransferablevote.scheme import Round
+from turnout_election_schemes.schemes.singletransferablevote.scheme import Round
 
 class STVStepThroughTest(unittest.TestCase):
 

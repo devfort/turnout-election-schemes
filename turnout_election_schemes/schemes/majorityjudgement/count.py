@@ -1,6 +1,6 @@
 from operator import itemgetter
-from pebblebox_election_schemes.schemes.errors import NoWinnerError, IncompleteVoteError
-from pebblebox_election_schemes.schemes.majorityjudgement.algorithm import MajorityJudgement as MJCandidate
+from turnout_election_schemes.schemes.errors import NoWinnerError, IncompleteVoteError
+from turnout_election_schemes.schemes.majorityjudgement.algorithm import MajorityJudgement as MJCandidate
 
 class MajorityJudgementCount(object):
     def sort_candidates(self, candidates):

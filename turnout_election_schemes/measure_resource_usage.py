@@ -1,7 +1,7 @@
 import random
 import resource
-from schemes.majorityjudgement import VoteAggregator, MajorityJudgementCount
-from schemes.singletransferablevote import SingleTransferableVoteScheme
+from turnout_election_schemes.schemes.majorityjudgement import VoteAggregator, MajorityJudgementCount
+from turnout_election_schemes.schemes.singletransferablevote import SingleTransferableVoteScheme
 import sys
 
 class MajorityJudgementDataGenerator(object):

@@ -1,7 +1,7 @@
 from operator import itemgetter
 import math
 from fractions import Fraction
-from schemes.errors import FailedElectionError
+from turnout_election_schemes.schemes.errors import FailedElectionError
 
 class Vote(object):
     def __init__(self, candidates_running, candidate_preferences):

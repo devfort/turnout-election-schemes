@@ -1,7 +1,7 @@
 import unittest
 from fractions import Fraction
-from schemes.errors import FailedElectionError
-from schemes.singletransferablevote.scheme import Round
+from turnout_election_schemes.schemes.errors import FailedElectionError
+from turnout_election_schemes.schemes.singletransferablevote.scheme import Round
 
 class RoundTest(unittest.TestCase):
     def test_all_vacancies_filled_should_be_true_after_round_runs(self):

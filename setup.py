@@ -4,24 +4,24 @@ try:
 except ImportError:
     from distutils.core import setup
 
-PACKAGE = 'pebblebox_election_schemes'
+PACKAGE = 'turnout_election_schemes'
 VERSION = '0.1'
 
 setup(
     name=PACKAGE, version=VERSION,
     description="Contains election schemes for pebblebox.",
     packages=[
-        'pebblebox_election_schemes',
-        'pebblebox_election_schemes.schemes',
-        'pebblebox_election_schemes.schemes.majorityjudgement',
-        'pebblebox_election_schemes.schemes.singletransferablevote',
+        'turnout_election_schemes',
+        'turnout_election_schemes.schemes',
+        'turnout_election_schemes.schemes.majorityjudgement',
+        'turnout_election_schemes.schemes.singletransferablevote',
     ],
     license='MIT',
     author='/dev/fort 9',
     author_email='contact@devfort.com',
     install_requires=[
     ],
-    url='https://github.com/devfort/pebblebox_election_schemes',
+    url='https://github.com/devfort/turnout_election_schemes',
     classifiers=[
         'Intended Audience :: Developers',
         'Framework :: Django',

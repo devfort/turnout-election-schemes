@@ -1,8 +1,8 @@
 import unittest
-from schemes.majorityjudgement.count import MajorityJudgementCount
-from schemes.majorityjudgement.scheme import Scheme
-from schemes.majorityjudgement.vote_aggregator import VoteAggregator
-from schemes.errors import IncompleteVoteError, NoWinnerError
+from turnout_election_schemes.schemes.majorityjudgement.count import MajorityJudgementCount
+from turnout_election_schemes.schemes.majorityjudgement.scheme import Scheme
+from turnout_election_schemes.schemes.majorityjudgement.vote_aggregator import VoteAggregator
+from turnout_election_schemes.schemes.errors import IncompleteVoteError, NoWinnerError
 
 class MajorityJudgementTest(unittest.TestCase):
     """
@@ -141,7 +141,7 @@ class TestMajorityJudgementScheme(unittest.TestCase):
                 101: {'grade': 3, 'order': 0, 'counts': (0,1,0,2,0)}}
 
         scheme = Scheme()
-        success, result = scheme.perform_count(candidate_ids, [steve, bob, dave], 4)
+        success, result, winners = scheme.perform_count(candidate_ids, [steve, bob, dave], 4)
 
         self.assertTrue(success)
         self.assertEqual(expected_output, result)

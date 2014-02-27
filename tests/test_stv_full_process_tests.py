@@ -1,7 +1,7 @@
 import unittest
 from fractions import Fraction
-from schemes.errors import FailedElectionError
-from schemes.singletransferablevote.scheme import SingleTransferableVoteScheme
+from turnout_election_schemes.schemes.errors import FailedElectionError
+from turnout_election_schemes.schemes.singletransferablevote.scheme import SingleTransferableVoteScheme
 
 class STVoteFullProcessTest(unittest.TestCase):
 

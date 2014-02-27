@@ -1,6 +1,6 @@
 import unittest
-from schemes.majorityjudgement.vote_aggregator import VoteAggregator
-from schemes.errors import IncompleteVoteError, InvalidVoteError
+from turnout_election_schemes.schemes.majorityjudgement.vote_aggregator import VoteAggregator
+from turnout_election_schemes.schemes.errors import IncompleteVoteError, InvalidVoteError
 
 class TestVoteAggregator(unittest.TestCase):
     def setUp(self):
