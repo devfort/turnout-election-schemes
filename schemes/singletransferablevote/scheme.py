@@ -102,6 +102,12 @@ class Round(object):
                 self._continuing_candidates.values()
             )
 
+        candidates_to_elect = sorted(
+            candidates_to_elect,
+            key = lambda c: c.value_of_votes(),
+            reverse = True
+        )
+
         for candidate in candidates_to_elect:
             self._provisionally_elected_candidates.append(candidate)
             del self._continuing_candidates[candidate.candidate_id]

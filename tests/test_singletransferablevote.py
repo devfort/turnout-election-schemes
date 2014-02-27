@@ -511,3 +511,24 @@ class SingeTransferableVoteTest(unittest.TestCase):
         stv_round._exclude_candidate_with_fewest_votes()
 
         self.assertEqual(expected_results, stv_round.results())
+
+    def test_elected_candidates_returns_the_correct_order(self):
+        """
+        Check that candidates with more votes are returned ahead of candidates
+        with fewer votes
+        """
+
+        vacancies = 2
+        candidates = ('Back Bacon', 'Streaky Bacon', 'Peanut')
+        votes = (
+            ('Peanut',),
+            ('Back Bacon',), ('Back Bacon',), ('Back Bacon',),
+            ('Streaky Bacon',), ('Streaky Bacon',), ('Streaky Bacon',), ('Streaky Bacon',),
+        )
+
+        expected_order = ['Streaky Bacon', 'Back Bacon']
+
+        stv_round = Round(vacancies, candidates, votes)
+        stv_round._provisionally_elect_candidates()
+
+        self.assertEqual(expected_order, stv_round.elected_candidates())
