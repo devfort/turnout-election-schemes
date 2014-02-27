@@ -1,28 +1,45 @@
-from operator import itemgetter
-from schemes.errors import NoWinnerError, IncompleteVoteError
-from schemes.majorityjudgement.algorithm import MajorityJudgement as MJCandidate
+import math
+from schemes.majorityjudgement.count import MajorityJudgementCount
+from schemes.majorityjudgement.vote_aggregator import VoteAggregator
 
-class MajorityJudgementScheme(object):
-    def sort_candidates(self, candidates):
-        self._ensure_all_votes_are_of_same_length(map(itemgetter(1), candidates))
+class Scheme(object):
+    identifier = 'majority_judgement'
+    name = "Majority Judgement"
+    max_winners = 1
+    description = "Allows you to choose a single winner whilst taking into account the graded preferences of voters."
 
-        mj_candidates = []
-        for c in candidates:
-            mj_candidate = MJCandidate(c[1])
-            mj_candidate.original_tuple = c
-            mj_candidates.append(mj_candidate)
+    def perform_count(self, candidate_ids, votes_as_json):
+        """
+        votes_as_json is a list of tuples, each one being an individual users votes.
+        And each vote is a tuple with a numeric grade for each candidate, in the natural
+        order of the candidates.
+        """
+        max_grade = max(map(max, votes_as_json))
 
-        sorted_candidates = sorted(mj_candidates, reverse=True)
+        aggregator = VoteAggregator(candidate_ids, max_grade + 1)
+        aggregated_votes = aggregator.aggregate(votes_as_json)
 
-        self._ensure_no_duplicate_winner(sorted_candidates)
+        scheme = MajorityJudgementCount()
+        succeeded, result = scheme.sort_candidates(aggregated_votes)
+        return (
+            succeeded,
+            { x[0]: self._candidate_dict(x[1], n) for n, x in enumerate(result) }
+        )
 
-        return tuple(c.original_tuple for c in sorted_candidates)
+    def _candidate_dict(self, counts, order):
+        median = self._median_grade(counts)
 
-    def _ensure_all_votes_are_of_same_length(self, votes):
-        unique_vote_sizes = set(map(len, votes))
-        if len(unique_vote_sizes) > 1:
-            raise IncompleteVoteError()
+        return {
+                'grade': median,
+                'order': order,
+                'counts': counts
+                }
 
-    def _ensure_no_duplicate_winner(self, sorted_items):
-        if len(sorted_items) >= 2 and not cmp(sorted_items[0], sorted_items[1]):
-            raise NoWinnerError()
+    def _median_grade(self, counts):
+        total_grades = sum(counts)
+        median_point = math.ceil(float(total_grades)/2)
+        total_so_far = 0
+        for score, count in enumerate(counts):
+            total_so_far += count
+            if total_so_far >= median_point:
+                return score

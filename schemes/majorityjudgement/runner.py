@@ -1,6 +1,6 @@
 from schemes.scheme_runner import SchemeRunner
 from schemes.election_results import ElectionResults
-from schemes.majorityjudgement import VoteAggregator, MajorityJudgementScheme
+from schemes.majorityjudgement import VoteAggregator, MajorityJudgementCount
 import csv
 
 class Runner(SchemeRunner):
