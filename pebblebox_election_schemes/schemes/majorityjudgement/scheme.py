@@ -8,7 +8,7 @@ class Scheme(object):
     max_winners = 1
     description = "Allows you to choose a single winner whilst taking into account the graded preferences of voters."
 
-    def perform_count(self, candidate_ids, votes_as_json, max_grade):
+    def perform_count(self, candidate_ids, votes_as_json, max_grade=4):
         """
         votes_as_json is a list of tuples, each one being an individual users votes.
         And each vote is a tuple with a numeric grade for each candidate, in the natural
