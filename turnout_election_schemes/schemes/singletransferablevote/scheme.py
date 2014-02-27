@@ -71,7 +71,7 @@ class Candidate(object):
         self.elected_quota = quota
 
 class Round(object):
-    def __init__(self, num_vacancies, candidates, votes, random = _Random()):
+    def __init__(self, num_vacancies, candidates, votes, random=_Random()):
         self.num_vacancies = num_vacancies
         self.random = random
         self._prepare_candidates(candidates)
@@ -214,7 +214,7 @@ class Round(object):
                 self._continuing_candidates[preferred_candidate].votes.append(vote)
 
 class SingleTransferableVoteScheme(object):
-    def __init__(self, num_vacancies, candidates, votes, random = _Random()):
+    def __init__(self, num_vacancies, candidates, votes, random=_Random()):
         self.num_vacancies = num_vacancies
         self.original_candidates = candidates
         self.remaining_candidates = candidates
@@ -223,7 +223,7 @@ class SingleTransferableVoteScheme(object):
         self.rounds = []
 
     def run_round(self):
-        new_round = Round(self.num_vacancies, self.remaining_candidates, self.votes, random = random)
+        new_round = Round(self.num_vacancies, self.remaining_candidates, self.votes, random=self.random)
         new_round.run()
 
         self.remaining_candidates = filter(
