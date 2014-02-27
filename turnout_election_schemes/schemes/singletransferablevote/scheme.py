@@ -172,7 +172,7 @@ class Round(object):
         bulk_exclusions = self._bulk_exclusions()
 
         # TODO this should return an empty list as its failure case
-        if len(bulk_exclusions) > 1:
+        if len(bulk_exclusions) > 2:
             return bulk_exclusions
         else:
             return [self._candidate_with_fewest_votes()]
@@ -194,27 +194,27 @@ class Round(object):
             return candidates[0]
 
     def _bulk_exclusions(self):
-        # If there are multiple candidates with very low
-        # votes, we can exclude a few of them at once
-        # get a list of candidates lowest first
+        # Two or more candidates may be excluded simultaneously if the
+        # aggregated value of all candidates to be excluded is less then the
+        # value of the next lowest candidate and the value required by a
+        # candidate to obtain a quota
         candidates = sorted(
             self._continuing_candidates.values(),
             key = lambda c: c.value_of_votes()
         )
 
-        # deal with multiple very low votes
-        total_lowest_votes = 0
-        lowest_candidates = []
-        for index in range(0,len(candidates)-1):
-            candidate = candidates[index]
-            total_lowest_votes += candidate.value_of_votes()
-            # if the two together are less than the quota
-            if total_lowest_votes < self.quota:
-                # see if they are less than the next candidate's
-                next_candidate = candidates[index+1]
-                if total_lowest_votes < next_candidate.value_of_votes():
-                    print candidate.candidate_id
-                    lowest_candidates.append(candidate)
+        total_of_lowest_candidates = candidates[0].value_of_votes() + candidates[1].value_of_votes()
+
+        lowest_candidates=[]
+        if total_of_lowest_candidates < self.quota:
+            lowest_candidates.append(candidates[0])
+            lowest_candidates.append(candidates[1])
+            for index in range(2,len(candidates)-1):
+                total_of_lowest_candidates += candidates[index].value_of_votes()
+                if total_of_lowest_candidates < self.quota:
+                    next_candidate = candidates[index+1]
+                    if total_of_lowest_candidates < next_candidate.value_of_votes():
+                        lowest_candidates.append(candidates[index])
                 else:
                     break
 
