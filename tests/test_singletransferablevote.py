@@ -116,9 +116,43 @@ class SingeTransferableVoteTest(unittest.TestCase):
 
         self.assertEqual(expected_reallocated_totals, stv_round.results())
 
-    def test_exhuasted_votes_are_not_reallocated(self):
-        self.assertFalse(True)
+    def test_exhausted_votes_are_not_reallocated(self):
+        """
+        A vote with no further preferences for other candidates shouldn't be
+        reallocated. In this example Anna starts with 9 votes which means she
+        has 3 surplus votes above the quota of 6. Second preference choices for
+        Anna's votes are split equally between no preference, Steve and Norm.
+        Steve and Norm should get 1 vote each and the final vote should
+        disappear.
+        """
 
+        votes = (
+            ('Anna', ), ('Anna', ), ('Anna', ),
+            ('Anna', 'Steve'), ('Anna', 'Steve'), ('Anna', 'Steve'),
+            ('Anna', 'Norm'), ('Anna', 'Norm'), ('Anna', 'Norm'),
+            ('Steve', ), ('Steve', ), ('Steve', ), ('Steve', ),
+            ('Norm', ), ('Norm', ), ('Norm', ),
+        )
+
+        candidates = ('Anna', 'Steve', 'Norm')
+        vacancies = 2
+
+        expected_results = {
+            'provisionally_elected': {
+                'Anna': 6
+            },
+            'continuing': {
+                'Steve': 5,
+                'Norm': 4
+            },
+            'excluded': {}
+        }
+
+        stv_round = Round(vacancies, candidates, votes)
+        stv_round._provisionally_elect_candidates()
+        stv_round._reassign_votes_from_candidate_with_highest_surplus()
+
+        self.assertEqual(expected_results, stv_round.results())
 
     def test_reallocate_multiple_surplus_votes_simple(self):
         """
