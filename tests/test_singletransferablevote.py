@@ -326,6 +326,14 @@ class SingeTransferableVoteTest(unittest.TestCase):
         we process her surplus votes first, but since Norm also has enough votes
         to exceed the quota, Anna's surplus votes are not reallocated to Norm but
         instead to voter's next choices.
+
+        Initial total votes are:
+            'Dom': 1,
+            'Anna': 5,
+            'Steve': 0,
+            'Norm': 4,
+            'Amy': 0,
+
         """
         votes = [
             ['Anna', 'Amy', 'Steve', 'Norm', 'Dom'],
@@ -339,33 +347,39 @@ class SingeTransferableVoteTest(unittest.TestCase):
             ['Norm', 'Steve', 'Dom', 'Anna', 'Amy'],
             ['Norm', 'Steve', 'Norm', 'Anna'],
         ]
+        candidates = ['Anna', 'Amy', 'Steve', 'Norm', 'Dom']
+        vacancies = 3
 
-        quota = 3
-        totals = {
-            'Dom': 1,
-            'Anna': 5,
-            'Steve': 0,
-            'Norm': 4,
-            'Amy': 0,
+        expected_results = {
+            'provisionally_elected': {
+                'Anna': 3,
+                'Norm': 3
+            },
+            'continuing': {
+                'Dom': 1 + Fraction(2,5),
+                'Steve': 2 + Fraction(1,5),
+            },
+            'excluded': {
+                'Amy': Fraction(2,5),
+            }
         }
 
-        expected_reallocated_totals = {
-            'Dom': 1 + Fraction(2,5),
-            'Anna': 3,
-            'Steve': 2 + Fraction(1,5),
-            'Norm': 3,
-            'Amy': Fraction(2,5),
-        }
+        stv_round = Round(vacancies, candidates, votes)
+        stv_round.run()
 
-        test_reallocated_totals = SingleTransferableVoteScheme(None, None, votes).reallocate_surplus_votes(quota, totals)
-
-        self.assertEqual(expected_reallocated_totals, test_reallocated_totals)
+        self.assertEqual(expected_results, stv_round.results())
 
     def test_reallocate_multiple_quota_met(self):
         """
         This case is where more than one candidate has met the quota. Anna has
         exceeded the quota but Norm has only met the quota. So we want to make
         sure that Anna's surplus votes are not reallocated to Norm.
+        Initial totals:
+            'Dom': 2,
+            'Anna': 5,
+            'Steve': 0,
+            'Norm': 3,
+            'Amy': 0,
         """
         votes = [
             ['Norm', 'Anna', 'Steve'],
@@ -379,27 +393,27 @@ class SingeTransferableVoteTest(unittest.TestCase):
             ['Anna', 'Norm', 'Steve', 'Dom', 'Amy'],
             ['Anna', 'Norm', 'Steve'],
         ]
+        candidates = ['Norm', 'Anna', 'Dom', 'Amy', 'Steve']
+        vacancies = 3
 
-        quota = 3
-        totals = {
-            'Dom': 2,
-            'Anna': 5,
-            'Steve': 0,
-            'Norm': 3,
-            'Amy': 0,
+        stv_round = Round(vacancies, candidates, votes)
+        stv_round.run()
+
+        expected_results = {
+            'provisionally_elected': {
+                'Anna': 3,
+                'Norm': 3
+            },
+            'continuing': {
+                'Dom': 2 + Fraction(2,5),
+                'Steve': 1 + Fraction(1,5),
+            },
+            'excluded': {
+                'Amy': Fraction(2,5),
+            }
         }
 
-        expected_reallocated_totals = {
-            'Dom': 2 + Fraction(2,5),
-            'Anna': 3,
-            'Steve': 1 + Fraction(1,5),
-            'Norm': 3,
-            'Amy': Fraction(2,5),
-        }
-
-        test_reallocated_totals = SingleTransferableVoteScheme(None, None, votes).reallocate_surplus_votes(quota, totals)
-
-        self.assertEqual(expected_reallocated_totals, test_reallocated_totals)
+        self.assertEqual(expected_results, stv_round.results())
 
     def test_reallocate_candidate_reaching_quota(self):
         """
