@@ -135,9 +135,10 @@ class Round(object):
         self._assign_votes(candidate.votes)
 
     def _exclude_candidates_with_fewest_votes(self):
-        candidate = self._candidates_with_fewest_votes()
-        self._excluded_candidates.append(candidate)
-        del self._continuing_candidates[candidate.candidate_id]
+        candidates = self._candidates_with_fewest_votes()
+        for candidate in candidates:
+            self._excluded_candidates.append(candidate)
+            del self._continuing_candidates[candidate.candidate_id]
 
     def _candidates_with_fewest_votes(self):
         # get a list of candidates ordered lowest first
@@ -152,7 +153,7 @@ class Round(object):
             # I don't like passing lowest_candidates around
             self._deal_with_tied_losers(candidates, lowest_candidates)
 
-        return lowest_candidates[0]
+        return lowest_candidates
 
     # only deals with two tied losers
     def _deal_with_tied_losers(self, candidates, lowest_candidates):

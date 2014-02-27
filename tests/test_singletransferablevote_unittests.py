@@ -382,7 +382,7 @@ class SingleTransferableVoteUnitTest(unittest.TestCase):
         }
 
         stv_round = Round(vacancies, candidates, votes)
-        stv_round._exclude_candidate_with_fewest_votes()
+        stv_round._exclude_candidates_with_fewest_votes()
 
         self.assertEqual(expected_results, stv_round.results())
 
@@ -405,7 +405,7 @@ class SingleTransferableVoteUnitTest(unittest.TestCase):
         stv_round = Round(vacancies, candidates, votes)
 
         with self.assertRaises(FailedElectionError):
-            stv_round._exclude_candidate_with_fewest_votes()
+            stv_round._exclude_candidates_with_fewest_votes()
 
     def test_tied_really_low_fewest_candidates_throws_Failed_Election(self):
         """
@@ -432,13 +432,16 @@ class SingleTransferableVoteUnitTest(unittest.TestCase):
         candidates = ('Beatles', 'Rolling Stones', 'Killers', 'Blur', 'Pulp')
         vacancies = 3
 
-        ideal_results = {
-            'provisionally_elected': {
+        # Note that we expect them to be in continuing
+        # rather than provisionally elected as we are
+        # just calling the method, not the whole round
+        expected_results = {
+            'provisionally_elected': {},
+            'continuing': {
                 'Beatles': 12,
                 'Rolling Stones': 9,
                 'Killers': 5,
             },
-            'continuing': {},
             'excluded': {
                 'Blur': 2,
                 'Pulp': 2
@@ -446,9 +449,9 @@ class SingleTransferableVoteUnitTest(unittest.TestCase):
         }
 
         stv_round = Round(vacancies, candidates, votes)
+        stv_round._exclude_candidates_with_fewest_votes()
 
-        with self.assertRaises(FailedElectionError):
-            stv_round._exclude_candidate_with_fewest_votes()
+        self.assertEqual(expected_results, stv_round.results())
 
     def test_elected_candidates_returns_the_correct_order(self):
         """
