@@ -244,8 +244,8 @@ class SingleTransferableVoteTest(unittest.TestCase):
 
     def test_candidates_should_be_elected_once_there_is_one_per_vacancy(self):
         votes = (
-            ('A', 'B'), ('A', 'B'), ('A', 'B'), ('A', 'B'), ('A', 'B'),
-            ('B', 'A'), ('B', 'A'), ('B', 'A'), ('B', 'A'), ('B', 'A'),
+            ('A', 'B'), ('A', 'B'), ('A', 'B'), ('A', 'B'), ('A', 'B'), ('A', 'B'),
+            ('B', 'A'), ('B', 'A'), ('B', 'A'), ('B', 'A'),
             ('C')
         )
         candidates = ['A', 'B', 'C', 'D']
