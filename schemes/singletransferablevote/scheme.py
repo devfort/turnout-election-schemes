@@ -58,6 +58,8 @@ class Round(object):
             self._reassign_votes_from_candidate_with_highest_surplus()
             self._provisionally_elect_candidates()
 
+        self._exclude_candidate_with_fewest_votes()
+
     def results(self):
         #import ipdb; ipdb.set_trace()
         return {
