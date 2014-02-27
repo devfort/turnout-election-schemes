@@ -55,31 +55,15 @@ class SingleTransferableVoteTest(unittest.TestCase):
             'provisionally_elected': {
                 'Anna': 3,
                 'Norm': 3,
-            },
-            'continuing': {
                 'Dom': 2 + Fraction(2,5),
             },
+            'continuing': { },
             'excluded': {
                 'Steve': 1 + Fraction(3,5),
             },
         }
 
         self.assertEqual(expected_round_2, stv.round_results())
-        self.assertFalse(stv.completed())
-
-        stv.run_round()
-
-        expected_round_3 = {
-            'provisionally_elected': {
-                'Anna': 3,
-                'Norm': 3,
-                'Dom': 3 + Fraction (59,115),
-            },
-            'continuing': {},
-            'excluded': {},
-        }
-
-        self.assertEqual(expected_round_3, stv.round_results())
         self.assertTrue(stv.completed())
 
         final_results = [
