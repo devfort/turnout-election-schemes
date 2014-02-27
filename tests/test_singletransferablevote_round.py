@@ -4,44 +4,44 @@ from schemes.errors import FailedElectionError
 from schemes.singletransferablevote.scheme import Round
 
 class RoundTest(unittest.TestCase):
-    def test_all_vacancies_filled(self):
+    def test_all_vacancies_filled_should_be_true_after_round_runs(self):
         """
-        Test that Round can report when all the vacancies have been filled
+        Before a round has run it should report that all vacancies have not
+        been filled. After the round runs it should report that all vacancies
+        have been filled.
         """
-        candidates = ['Red', 'Green', 'Blue']
-        vacancies = 3
-        votes = ()
-        stv_round = Round(vacancies, candidates, votes)
-        stv_round.run()
 
+        vacancies = 2
+        candidates = ('Red', 'Green', 'Blue')
+        votes = (
+            ('Red', ), ('Red', ), ('Red', ), ('Red', ),
+            ('Green', ), ('Green', ), ('Green', ), ('Green', )
+        )
+
+        stv_round = Round(vacancies, candidates, votes)
+        self.assertFalse(stv_round.all_vacancies_filled())
+
+        stv_round.run()
         self.assertTrue(stv_round.all_vacancies_filled())
 
-    def test_all_vacancies_not_filled(self):
+    def test_all_vacancies_filled_should_be_false_after_incomplete_round(self):
         """
-        Test that Round can report when all the vacancies haven't been filled
+        After a round runs that fails to elect enough candidates the round
+        should report that it has not filled all vacancies.
         """
-        candidates = ['Red', 'Green', 'Blue', 'Yellow', 'Mauve']
+
         vacancies = 2
+        candidates = ('Red', 'Green', 'Blue', 'Yellow', 'Mauve')
         votes = (
-            ('Red',),
-            ('Red',),
-            ('Red',),
-            ('Red',),
-            ('Red',),
-            ('Green',),
-            ('Green',),
-            ('Green',),
-            ('Green',),
-            ('Blue',),
-            ('Blue',),
-            ('Blue',),
-            ('Yellow',),
-            ('Yellow',),
-            ('Mauve',),
+            ('Red',), ('Red',), ('Red',), ('Red',), ('Red',),
+            ('Green',), ('Green',), ('Green',), ('Green',),
+            ('Blue',), ('Blue',), ('Blue',),
+            ('Yellow',), ('Yellow',),
+            ('Mauve',)
         )
+
         stv_round = Round(vacancies, candidates, votes)
         stv_round.run()
-
         self.assertFalse(stv_round.all_vacancies_filled())
 
     def test_reallocate_multiple_surplus_votes_simple(self):
