@@ -60,7 +60,7 @@ class Round(object):
             self._provisionally_elect_candidates()
 
         if not self.all_vacancies_filled():
-            self._exclude_candidate_with_fewest_votes()
+            self._exclude_candidates_with_fewest_votes()
             self._provisionally_elect_candidates()
 
     def results(self):
@@ -134,21 +134,34 @@ class Round(object):
         candidate.devalue_votes(self.quota)
         self._assign_votes(candidate.votes)
 
-    def _exclude_candidate_with_fewest_votes(self):
-        candidate = self._candidate_with_fewest_votes()
+    def _exclude_candidates_with_fewest_votes(self):
+        candidate = self._candidates_with_fewest_votes()
         self._excluded_candidates.append(candidate)
         del self._continuing_candidates[candidate.candidate_id]
 
-    def _candidate_with_fewest_votes(self):
+    def _candidates_with_fewest_votes(self):
+        # get a list of candidates ordered lowest first
         candidates = sorted(
             self._continuing_candidates.values(),
             key = lambda c: c.value_of_votes()
         )
+        # in most cases, only one candidate will be returned here
+        lowest_candidates = [candidates[0]]
 
         if len(candidates) > 1 and candidates[0].value_of_votes() == candidates[1].value_of_votes():
-            raise FailedElectionError()
+            # I don't like passing lowest_candidates around
+            self._deal_with_tied_losers(candidates, lowest_candidates)
 
-        return candidates[0]
+        return lowest_candidates[0]
+
+    # only deals with two tied losers
+    def _deal_with_tied_losers(self, candidates, lowest_candidates):
+        total_tied_votes = candidates[0].value_of_votes() + candidates[1].value_of_votes()
+        next_candidate_vote_total = candidates[2].value_of_votes()
+        if total_tied_votes < self.quota and total_tied_votes < next_candidate_vote_total:
+            lowest_candidates.append(candidates[1])
+        else:
+            raise FailedElectionError()
 
     def _candidate_with_highest_surplus(self):
         candidates = sorted(
