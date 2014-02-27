@@ -21,7 +21,8 @@ class Scheme(object):
         succeeded, result = scheme.sort_candidates(aggregated_votes)
         return (
             succeeded,
-            { x[0]: self._candidate_dict(x[1], n) for n, x in enumerate(result) }
+            { x[0]: self._candidate_dict(x[1], n) for n, x in enumerate(result) },
+            (result[0][0],)
         )
 
     def _candidate_dict(self, counts, order):
