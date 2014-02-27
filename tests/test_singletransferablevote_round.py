@@ -99,13 +99,27 @@ class RoundTest(unittest.TestCase):
             stv_round.run()
 
     def test_candidates_should_be_elected_once_there_is_one_per_vacancy(self):
-        votes = (
-            ('A', 'B'), ('A', 'B'), ('A', 'B'), ('A', 'B'), ('A', 'B'), ('A', 'B'),
-            ('B', 'A'), ('B', 'A'), ('B', 'A'), ('B', 'A'),
-            ('C')
-        )
-        candidates = ['A', 'B', 'C', 'D']
+        """
+        As soon as there are the same number of remaining candidates as
+        vacancies the election is completed with all of the remaining
+        candidates elected as winners.
+
+        Note that this makes it possible for a candidate to be elected even
+        without enough votes to reach the quota, as in this example.
+
+        Surplus votes for candidates A and B become exhausted votes because
+        there is no further preference to reallocate them to. Candidate D is
+        then excluded because they have the fewest votes. Since this leaves
+        only three candidates for three vacancies candidate C is declared
+        elected, even though they have only one vote compared to the quota of
+        three.
+        """
+
         vacancies = 3
+        candidates = ('A', 'B', 'C', 'D')
+        votes = 6 * (('A', 'B'), ), + \
+                5 * (('B', 'A'), ), + \
+                1 * (('C', ), )
 
         expected_results = {
             'provisionally_elected': {
@@ -113,8 +127,7 @@ class RoundTest(unittest.TestCase):
                 'B': 3,
                 'C': 1
             },
-            'continuing': {
-            },
+            'continuing': {},
             'excluded': {
                 'D': 0
             },
@@ -122,6 +135,5 @@ class RoundTest(unittest.TestCase):
 
         stv = Round(vacancies, candidates, votes)
         stv.run()
-
         self.assertEqual(expected_results, stv.results())
         self.assertTrue(stv.all_vacancies_filled())
