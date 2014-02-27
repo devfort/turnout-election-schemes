@@ -2,7 +2,7 @@ import unittest
 from schemes.singletransferablevote.scheme import *
 from fractions import Fraction
 
-class SingeTransferableVoteTest(unittest.TestCase):
+class SingleTransferableVoteUnitTest(unittest.TestCase):
 
     # Moved from full test - should be unit test
     def test_exhausted_ballots_should_not_be_used(self):

@@ -3,7 +3,7 @@ from fractions import Fraction
 from schemes.errors import FailedElectionError
 from schemes.singletransferablevote.scheme import SingleTransferableVoteScheme
 
-class SingleTransferableVoteTest(unittest.TestCase):
+class STVoteFullProcessTest(unittest.TestCase):
 
     # TODO: this should be a full election test
     def test_initial_case(self):
