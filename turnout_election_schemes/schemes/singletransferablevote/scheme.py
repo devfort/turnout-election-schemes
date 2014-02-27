@@ -54,7 +54,6 @@ class Round(object):
     def run(self):
         self._provisionally_elect_candidates()
 
-        #import ipdb; ipdb.set_trace()
         while not self.all_vacancies_filled() and self._surplus_exists():
             self._reassign_votes_from_candidate_with_highest_surplus()
             self._provisionally_elect_candidates()
@@ -64,7 +63,6 @@ class Round(object):
             self._provisionally_elect_candidates()
 
     def results(self):
-        #import ipdb; ipdb.set_trace()
         return {
             'provisionally_elected': self._provisionally_elected(),
             'continuing': self._continuing(),
@@ -94,7 +92,6 @@ class Round(object):
         return len(self.unexhausted_votes) / (self.num_vacancies + 1) + 1
 
     def _provisionally_elect_candidates(self):
-        #import ipdb; ipdb.set_trace()
         if len(self._continuing_candidates) <= self._remaining_vacancies():
             candidates_to_elect = self._continuing_candidates.values()
         else:
@@ -181,7 +178,6 @@ class Round(object):
         return {candidate.candidate_id: candidate.value_of_votes() for candidate in candidates}
 
     def _assign_votes(self, votes):
-        #import ipdb; ipdb.set_trace()
         for vote in votes:
             preferred_candidate = vote.preference_from(self._continuing_candidates.keys())
             if preferred_candidate is not None:
@@ -199,7 +195,6 @@ class SingleTransferableVoteScheme(object):
         new_round = Round(self.num_vacancies, self.remaining_candidates, self.votes)
         new_round.run()
 
-        #import ipdb; ipdb.set_trace()
         self.remaining_candidates = filter(
             lambda candidate: not candidate in new_round.results()['excluded'].keys(),
             self.remaining_candidates
