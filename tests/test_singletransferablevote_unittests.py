@@ -460,14 +460,13 @@ class SingleTransferableVoteUnitTest(unittest.TestCase):
         with self.assertRaises(FailedElectionError):
             stv_round._exclude_candidates_with_fewest_votes()
 
-    def test_tied_really_low_fewest_candidates_throws_Failed_Election(self):
+    def test_tied_really_low_fewest_candidates_excludes_both(self):
         """
         In this case, two candidates are tied for last place but they
         have so few votes they couldn't win.
         The calculation here is - if their votes added together are not enough
         to reach the next candidate or the quota, we don't have to worry about
-        who to eliminate first and can eliminate both at the same time.  At the
-        moment this just throws a FailedElection error.
+        who to eliminate first and can eliminate both at the same time.
         """
         votes = (
             ('Beatles', ), ('Beatles', ), ('Beatles', ), ('Beatles', ),
