@@ -16,7 +16,7 @@ class SingeTransferableVoteTest(unittest.TestCase):
         quota = Round(3, ('Red', 'Blue', 'Green'), votes).quota
         self.assertEqual(3, quota)
 
-
+    # TODO this should be a one-round test
     def test_all_vacancies_filled(self):
         """
         Test that Round can report when all the vacancies have been filled
@@ -29,6 +29,7 @@ class SingeTransferableVoteTest(unittest.TestCase):
 
         self.assertTrue(stv_round.all_vacancies_filled())
 
+    # TODO this should be a one-round test
     def test_all_vacancies_not_filled(self):
         """
         Test that Round can report when all the vacancies haven't been filled
@@ -234,6 +235,7 @@ class SingeTransferableVoteTest(unittest.TestCase):
 
         self.assertEqual(expected_results, stv_round.results())
 
+    # TODO this should be a one-round test
     def test_reallocate_multiple_surplus_votes_simple(self):
         """
         This is to test the case where more than one candidate has exceeded
@@ -318,6 +320,7 @@ class SingeTransferableVoteTest(unittest.TestCase):
 
         self.assertEqual(expected_result, stv_round.results())
 
+    # TODO this is a one-round test
     def test_reallocate_multiple_surplus_votes(self):
         """
         This is to test the case where more than one candidate has exceeded
@@ -369,6 +372,7 @@ class SingeTransferableVoteTest(unittest.TestCase):
 
         self.assertEqual(expected_results, stv_round.results())
 
+    # TODO this is a one-round test
     def test_reallocate_multiple_quota_met(self):
         """
         This case is where more than one candidate has met the quota. Anna has
@@ -415,6 +419,7 @@ class SingeTransferableVoteTest(unittest.TestCase):
 
         self.assertEqual(expected_results, stv_round.results())
 
+    # TODO move this to its own file
     def test_reallocate_candidate_reaching_quota(self):
         """
         This test steps through the run round algorithm, demonstrating

@@ -4,10 +4,7 @@ from schemes.errors import FailedElectionError
 from schemes.singletransferablevote.scheme import SingleTransferableVoteScheme
 
 class SingleTransferableVoteTest(unittest.TestCase):
-    """
-    Pulling out the test for the full process from tests for individual methods.
-    Expect this to change as method is refined.
-    """
+    # TODO: this should be a full election test
     def test_initial_case(self):
         """
         This election has three rounds and ends successfully with three
@@ -73,6 +70,7 @@ class SingleTransferableVoteTest(unittest.TestCase):
         ]
         self.assertEqual(final_results, stv.final_results())
 
+    # TODO: this should become a unit test on Round.quota
     def test_exhausted_ballots_should_not_be_used(self):
         votes = (
             ('A',),
@@ -161,6 +159,7 @@ class SingleTransferableVoteTest(unittest.TestCase):
         final_results = ['F', 'E']
         self.assertEqual(final_results, stv.final_results())
 
+    # TODO: this should be a one-round test
     def test_tied_winners_should_cause_election_to_fail(self):
         votes = (
             ('A', 'C'), ('A', 'C'), ('A', 'C'), ('A', 'C'), ('A', 'C'),
@@ -174,6 +173,7 @@ class SingleTransferableVoteTest(unittest.TestCase):
         with self.assertRaises(FailedElectionError):
             stv.run_round()
 
+    # TODO: this should be a one-round test
     def test_tied_losers_should_cause_election_to_fail(self):
         votes = (
             ('A', 'C'), ('A', 'D'),
@@ -190,6 +190,7 @@ class SingleTransferableVoteTest(unittest.TestCase):
         with self.assertRaises(FailedElectionError):
             stv.run_round()
 
+    # TODO: this should be a one-round test
     def test_bulk_eliminiation_resolves_tied_loser_failures(self):
         votes = (
             ('A', 'D'), ('A', 'D'),
@@ -242,6 +243,7 @@ class SingleTransferableVoteTest(unittest.TestCase):
         final_results = ['F', 'E']
         self.assertEqual(final_results, stv.final_results())
 
+    # TODO: this should be a one-round test
     def test_candidates_should_be_elected_once_there_is_one_per_vacancy(self):
         votes = (
             ('A', 'B'), ('A', 'B'), ('A', 'B'), ('A', 'B'), ('A', 'B'), ('A', 'B'),
