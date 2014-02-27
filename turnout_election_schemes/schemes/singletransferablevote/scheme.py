@@ -187,12 +187,12 @@ class Round(object):
         # deal with multiple very low votes
         total_lowest_votes = 0
         lowest_candidates = []
-        for index in range(0,len(candidates)):
+        for index in range(0,len(candidates)-1):
             candidate = candidates[index]
             total_lowest_votes += candidate.value_of_votes()
             # if the two together are less than the quota
             if total_lowest_votes < self.quota:
-                # see if they are less than the next candidates'
+                # see if they are less than the next candidate's
                 next_candidate = candidates[index+1]
                 if total_lowest_votes < next_candidate.value_of_votes():
                     print candidate.candidate_id
