@@ -98,39 +98,6 @@ class RoundTest(unittest.TestCase):
         with self.assertRaises(FailedElectionError):
             stv_round.run()
 
-    @unittest.skip('bulk elimination functionality not yet written')
-    def test_bulk_eliminiation_resolves_tied_loser_failures(self):
-        votes = (
-            ('A', 'D'), ('A', 'D'),
-            ('B', 'E'), ('B', 'E'),
-            ('C', 'F'), ('C', 'F'), ('C', 'F'),
-            ('D', ), ('D', ), ('D', ), ('D', ), ('D', ), ('D', ), ('D', ), ('D', ),
-            ('E', ), ('E', ), ('E', ), ('E', ), ('E', ), ('E', ), ('E', ), ('E', ), ('E', ), ('E', ), ('E', ), ('E', ),
-            ('F', ), ('F', ), ('F', ), ('F', ), ('F', ), ('F', ), ('F', ), ('F', ), ('F', ), ('F', ), ('F', ), ('F', ), ('F', )
-        )
-        candidates = ['A', 'B', 'C', 'D', 'E', 'F']
-        vacancies = 2
-
-        stv_round = Round(vacancies, candidates, votes)
-
-        stv_round.run()
-
-        expected_results = {
-            'provisionally_elected': {},
-            'continuing': {
-                'D': 8,
-                'E': 12,
-                'F': 13
-            },
-            'excluded': {
-                'A': 2,
-                'B': 2,
-                'C': 3
-            },
-        }
-
-        self.assertEqual(expected_results, stv_round.round_results())
-
     def test_candidates_should_be_elected_once_there_is_one_per_vacancy(self):
         votes = (
             ('A', 'B'), ('A', 'B'), ('A', 'B'), ('A', 'B'), ('A', 'B'), ('A', 'B'),
