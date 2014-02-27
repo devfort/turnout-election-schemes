@@ -49,7 +49,8 @@ class RoundTest(unittest.TestCase):
         vacancies = 3
         candidates = ('Oranges', 'Apples', 'Pears', 'Lemons', 'Limes')
         votes = 9 * (('Oranges', 'Pears'), ) + \
-                7 * (('Apples', 'Lemons'), )
+                8 * (('Apples', 'Lemons'), ) + \
+                1 * (('Lemons', ), )
 
         expected_results = {
             'provisionally_elected': {
@@ -58,7 +59,7 @@ class RoundTest(unittest.TestCase):
             },
             'continuing': {
                 'Pears': 4,
-                'Lemons': 2
+                'Lemons': 4
             },
             'excluded': {
                 'Limes': 0
