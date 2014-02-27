@@ -54,7 +54,12 @@ class Round(object):
     def run(self):
         self._provisionally_elect_candidates()
 
-        # maybe deal with multiple very low votes here
+        if not self.all_vacancies_filled:
+            # Putting it here assumes that if this eliminates all remaining
+            # candidates it would be a failed election - 1000,1000,3,2,2
+            # with three vacancies - does the 3 get elected? or is it
+            # a failed election?
+            self._bulk_exclusions()
 
         #import ipdb; ipdb.set_trace()
         while not self.all_vacancies_filled() and self._surplus_exists():
@@ -143,27 +148,40 @@ class Round(object):
             del self._continuing_candidates[candidate.candidate_id]
 
     def _candidates_with_fewest_votes(self):
+        candidates = sorted(
+            self._continuing_candidates.values(),
+            key = lambda c: c.value_of_votes()
+        )
+
+        lowest_candidates = [candidates[0]]
+
+        if len(candidates) > 1 and candidates[0].value_of_votes() == candidates[1].value_of_votes():
+            raise FailedElectionError
+
+        return lowest_candidates
+
+    def _bulk_exclusions(self):
+        # If there are multiple candidates with very low
+        # votes, we can exclude a few of them at once
         # get a list of candidates lowest first
         candidates = sorted(
             self._continuing_candidates.values(),
             key = lambda c: c.value_of_votes()
         )
-        lowest_candidates = [candidates[0]]
 
-        if len(candidates) > 1 and candidates[0].value_of_votes() == candidates[1].value_of_votes():
-            # I don't like passing lowest_candidates around
-            self._deal_with_tied_losers(candidates, lowest_candidates)
+        # deal with multiple very low votes
+        total_lowest_votes = 0
+        lowest_candidates = []
+        for candidate in candidates:
+            total_lowest_votes += candidate.value_of_votes()
+            # it's not just this though, it's also for next candidate
+            if total_lowest_votes < self.quota:
+                print candidate.candidate_id
+                lowest_candidates.append(candidate)
+                self._continuing_candidates.remove(candidate)
+            else:
+                break
 
-        return lowest_candidates
-
-    # only deals with two tied losers
-    def _deal_with_tied_losers(self, candidates, lowest_candidates):
-        total_tied_votes = candidates[0].value_of_votes() + candidates[1].value_of_votes()
-        next_candidate_vote_total = candidates[2].value_of_votes()
-        if total_tied_votes < self.quota and total_tied_votes < next_candidate_vote_total:
-            lowest_candidates.append(candidates[1])
-        else:
-            raise FailedElectionError()
 
     def _candidate_with_highest_surplus(self):
         candidates = sorted(
