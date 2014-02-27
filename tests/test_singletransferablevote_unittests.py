@@ -441,14 +441,15 @@ class SingleTransferableVoteUnitTest(unittest.TestCase):
     def test_tied_fewest_candidates_throws_Failed_Election(self):
         """
         If candidates are tied for last place, it throws a Failed
-        Election error
+        Election error. This is the case where they are not so
+        low that they can both be excluded.
         """
         votes = (
             ('Chocolate', ), ('Chocolate', ), ('Chocolate', ), ('Chocolate', ), ('Chocolate', ),
             ('Crisps', ), ('Crisps', ), ('Crisps', ), ('Crisps', ), ('Crisps', ),
             ('Popcorn', ), ('Popcorn', ), ('Popcorn', ), ('Popcorn', ),
-            ('Fruit', ), ('Fruit', ),
-            ('Vegetables', ), ('Vegetables', )
+            ('Fruit', ), ('Fruit', ), ('Fruit', ),
+            ('Vegetables', ), ('Vegetables', ), ('Vegetables', )
         )
 
         candidates = ('Vegetables', 'Chocolate', 'Fruit', 'Crisps', 'Popcorn')
@@ -456,7 +457,6 @@ class SingleTransferableVoteUnitTest(unittest.TestCase):
 
         stv_round = Round(vacancies, candidates, votes)
 
-        # doesn't fail
         with self.assertRaises(FailedElectionError):
             stv_round._exclude_candidates_with_fewest_votes()
 

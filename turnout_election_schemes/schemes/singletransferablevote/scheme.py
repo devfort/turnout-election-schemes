@@ -167,7 +167,7 @@ class Round(object):
 
         # either do bulk exclusion or just lowest
         lowest_candidates = self._bulk_exclusions()
-        if len(lowest_candidates) < 1:
+        if len(lowest_candidates) <= 1:
             lowest_candidates = [candidates[0]]
 
             if len(candidates) > 1 and candidates[0].value_of_votes() == candidates[1].value_of_votes():
