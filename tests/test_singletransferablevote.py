@@ -1,20 +1,26 @@
 import unittest
-from schemes.singletransferablevote.scheme import SingleTransferableVoteScheme
+from schemes.singletransferablevote.scheme import *
 from fractions import Fraction
 
 class SingeTransferableVoteTest(unittest.TestCase):
 
     def test_quota(self):
-        seats = 3
+        """
+        Tests a simple quota case. Quota should be 10 / (3 + 1) + 1 => 3
+        """
+
         votes = [
             ['Red', 'Blue', 'Green'] for i in range(0,10)
         ]
 
-        expected_quota = 3
-        actual_quota = SingleTransferableVoteScheme(seats, 3, votes).calculate_quota(seats, votes)
-        self.assertEqual(expected_quota, actual_quota)
+        quota = Round(3, ('Red', 'Blue', 'Green'), votes).quota
+        self.assertEqual(3, quota)
 
-    def test_calculate_totals(self):
+    def test_calculate_initial_totals(self):
+        """
+        Tests the initial assignment of votes
+        """
+
         votes = [
             ['Norm', 'Anna', 'Steve'],
             ['Dom', 'Anna', 'Steve', 'Norm', 'Amy'],
@@ -30,7 +36,7 @@ class SingeTransferableVoteTest(unittest.TestCase):
         candidates = ['Dom', 'Anna', 'Steve', 'Norm', 'Amy']
         seats = 3
 
-        totals = SingleTransferableVoteScheme(seats, candidates, votes).calculate_totals()
+        results = Round(seats, candidates, votes).results()
 
         expected_totals = {
             'Dom': 2,
@@ -39,7 +45,31 @@ class SingeTransferableVoteTest(unittest.TestCase):
             'Steve': 0,
             'Amy': 0,
         }
-        self.assertEqual(expected_totals, totals)
+        self.assertEqual(expected_totals, results['continuing'])
+
+    def test_provisionally_elect_candidates(self):
+        """
+        Tests that candidates at or above the quota are marked as provisionally elected
+        """
+
+        votes = (
+            ('A', ), ('A', ), ('A', ), ('A', ),
+            ('B', ), ('B', ), ('B', ),
+            ('C', )
+        )
+        candidates = ('A', 'B', 'C')
+        vacancies = 2
+
+        stv_round = Round(vacancies, candidates, votes)
+        stv_round._provisionally_elect_candidates()
+        results = stv_round.results()
+
+        expected_totals = {
+            'A': 4,
+            'B': 3
+        }
+
+        self.assertEqual(expected_totals, results['provisionally_elected'])
 
     def test_reallocate_surplus_votes(self):
         """
@@ -65,25 +95,26 @@ class SingeTransferableVoteTest(unittest.TestCase):
             ['Yellow', 'Red', 'Green', 'Blue'],
             ['Yellow', 'Blue', 'Green', 'Red'],
         ]
-        quota = 6
-        totals = {
-            'Red': 2,
-            'Green': 9,
-            'Blue': 2,
-            'Yellow': 4,
-        }
+        candidates = ('Green', 'Blue', 'Yellow', 'Red')
+        vacancies = 2
 
         expected_reallocated_totals = {
-            'Red': 2,
-            'Green': 6,
-            'Blue': 4,
-            'Yellow': 5,
+            'provisionally_elected': {
+                'Green': 6
+            },
+            'continuing': {
+                'Red': 2,
+                'Blue': 4,
+                'Yellow': 5
+            },
+            'excluded': {}
         }
 
-        # TODO passing in None - indicates no validation...
-        test_reallocated_totals = SingleTransferableVoteScheme(None, None, votes).reallocate_surplus_votes(quota, totals)
+        stv_round = Round(vacancies, candidates, votes)
+        stv_round._provisionally_elect_candidates()
+        stv_round._reassign_votes_from_candidate_with_highest_surplus()
 
-        self.assertEqual(expected_reallocated_totals, test_reallocated_totals)
+        self.assertEqual(expected_reallocated_totals, stv_round.results())
 
     def test_reallocate_multiple_surplus_votes_simple(self):
         """
@@ -258,25 +289,39 @@ class SingeTransferableVoteTest(unittest.TestCase):
 
         self.assertEqual(expected_reallocated_totals, test_reallocated_totals)
 
-    def test_candidates_that_meet_quota_is_ordered(self):
+    def test_candidates_with_surplus_is_ordered(self):
         """
         We want the method under test to return a list of candidates whose
-        total votes are equal to or exceed the quota, and that list of
-        candidates to be ordered, highest votes first.
-        This test tests a number of these conditions:
-            Mars = 3 (i.e. equal to but not exceeding quota)
-            Galaxy = 8 (i.e. exceeding quota)
-            That the results are returned in order, highest first
+        total votes exceed the quota, and that list of candidates to be
+        ordered, highest votes first.
+
+        With 3 seats available and the following votes:
+
+            Mars: 3
+            Bounty: 6
+            Galaxy: 8
+            Crunchie: 2
+
+        We have a quota of 5 and expect Galaxy and Bounty to be returned as
+        candidates with surplus, in that order.
         """
-        quota = 3
-        totals = {
-            'Mars': 3,
-            'Bounty': 6,
-            'Galaxy': 8,
-            'Crunchie': 2,
-        }
-        expected_candidates_meeting_quota = ['Galaxy', 'Bounty', 'Mars']
 
-        actual_candidates_meeting_quota = SingleTransferableVoteScheme(None, None, None).candidates_that_meet_quota(quota, totals)
+        votes = (
+            ('Mars', ), ('Mars', ), ('Mars', ),
+            ('Bounty', ), ('Bounty', ), ('Bounty', ), ('Bounty', ), ('Bounty', ), ('Bounty', ),
+            ('Galaxy', ), ('Galaxy', ), ('Galaxy', ), ('Galaxy', ), ('Galaxy', ), ('Galaxy', ), ('Galaxy', ), ('Galaxy', ),
+            ('Crunchie', ), ('Crunchie', )
+        )
+        candidates = ('Mars', 'Bounty', 'Galaxy', 'Crunchie')
+        seats = 3
 
-        self.assertEqual(expected_candidates_meeting_quota, actual_candidates_meeting_quota)
+        expected_candidates = ['Galaxy', 'Bounty']
+
+        stv_round = Round(seats, candidates, votes)
+        stv_round._provisionally_elect_candidates()
+        candidates_with_surplus = map(
+            lambda c: c.candidate_id,
+            stv_round._candidates_with_surplus()
+        )
+
+        self.assertEqual(expected_candidates, candidates_with_surplus)
