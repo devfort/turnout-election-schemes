@@ -145,10 +145,10 @@ class SingleTransferableVoteTest(unittest.TestCase):
 
         expected_round_4 = {
             'provisionally_elected': {
-                'F': 6
+                'F': 6,
+                'E': 5
             },
             'continuing': {
-                'E': 5
             },
             'excluded': {
                 'D': 4
@@ -156,23 +156,9 @@ class SingleTransferableVoteTest(unittest.TestCase):
         }
 
         self.assertEqual(expected_round_4, stv.round_results())
-        self.assertFalse(stv.completed())
-
-        stv.run_round()
-
-        expected_round_5 = {
-            'provisionally_elected': {
-                'E': 5,
-                'F': 6
-            },
-            'continuing': {},
-            'excluded': {},
-        }
-
-        self.assertEqual(expected_round_5, stv.round_results())
         self.assertTrue(stv.completed())
 
-        final_results = ['E', 'F']
+        final_results = ['F', 'E']
         self.assertEqual(final_results, stv.final_results())
 
     def test_tied_winners_should_cause_election_to_fail(self):
