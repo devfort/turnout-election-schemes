@@ -69,52 +69,6 @@ class RoundTest(unittest.TestCase):
         stv_round.run()
         self.assertEqual(expected_results, stv_round.results())
 
-    def test_reallocate_multiple_quota_met(self):
-        """
-        This case is where more than one candidate has met the quota. Anna has
-        exceeded the quota but Norm has only met the quota. So we want to make
-        sure that Anna's surplus votes are not reallocated to Norm.
-        Initial totals:
-            'Dom': 2,
-            'Anna': 5,
-            'Steve': 0,
-            'Norm': 3,
-            'Amy': 0,
-        """
-        votes = [
-            ['Norm', 'Anna', 'Steve'],
-            ['Dom', 'Anna', 'Steve', 'Norm', 'Amy'],
-            ['Dom', 'Steve', 'Norm', 'Anna'],
-            ['Norm', 'Steve', 'Amy', 'Anna', 'Dom'],
-            ['Anna', 'Amy', 'Steve', 'Norm', 'Dom'],
-            ['Anna', 'Steve', 'Norm', 'Amy', 'Dom'],
-            ['Anna', 'Dom', 'Steve', 'Norm'],
-            ['Norm', 'Steve', 'Dom', 'Anna', 'Amy'],
-            ['Anna', 'Norm', 'Steve', 'Dom', 'Amy'],
-            ['Anna', 'Norm', 'Steve'],
-        ]
-        candidates = ['Norm', 'Anna', 'Dom', 'Amy', 'Steve']
-        vacancies = 3
-
-        stv_round = Round(vacancies, candidates, votes)
-        stv_round.run()
-
-        expected_results = {
-            'provisionally_elected': {
-                'Anna': 3,
-                'Norm': 3
-            },
-            'continuing': {
-                'Dom': 2 + Fraction(2,5),
-                'Steve': 1 + Fraction(1,5),
-            },
-            'excluded': {
-                'Amy': Fraction(2,5),
-            }
-        }
-
-        self.assertEqual(expected_results, stv_round.results())
-
     def test_tied_winners_should_cause_election_to_fail(self):
         votes = (
             ('A', 'C'), ('A', 'C'), ('A', 'C'), ('A', 'C'), ('A', 'C'),
