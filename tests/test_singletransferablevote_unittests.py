@@ -404,6 +404,7 @@ class SingleTransferableVoteUnitTest(unittest.TestCase):
 
         stv_round = Round(vacancies, candidates, votes)
 
+        # doesn't fail
         with self.assertRaises(FailedElectionError):
             stv_round._exclude_candidates_with_fewest_votes()
 

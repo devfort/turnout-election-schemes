@@ -220,7 +220,7 @@ class RoundTest(unittest.TestCase):
         with self.assertRaises(FailedElectionError):
             stv_round.run()
 
-    @unittest.skip('bulk elimination functionality not yet written')
+    #@unittest.skip('bulk elimination functionality not yet written')
     def test_bulk_eliminiation_resolves_tied_loser_failures(self):
         votes = (
             ('A', 'D'), ('A', 'D'),
@@ -251,7 +251,7 @@ class RoundTest(unittest.TestCase):
             },
         }
 
-        self.assertEqual(expected_results, stv_round.round_results())
+        self.assertEqual(expected_results, stv_round.results())
 
     def test_candidates_should_be_elected_once_there_is_one_per_vacancy(self):
         votes = (
