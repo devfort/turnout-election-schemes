@@ -16,6 +16,47 @@ class SingeTransferableVoteTest(unittest.TestCase):
         quota = Round(3, ('Red', 'Blue', 'Green'), votes).quota
         self.assertEqual(3, quota)
 
+
+    def test_all_vacancies_filled(self):
+        """
+        Test that Round can report when all the vacancies have been filled
+        """
+        candidates = ['Red', 'Green', 'Blue']
+        vacancies = 3
+        votes = ()
+        stv_round = Round(vacancies, candidates, votes)
+        stv_round.run()
+
+        self.assertTrue(stv_round.all_vacancies_filled())
+
+    def test_all_vacancies_not_filled(self):
+        """
+        Test that Round can report when all the vacancies haven't been filled
+        """
+        candidates = ['Red', 'Green', 'Blue', 'Yellow', 'Mauve']
+        vacancies = 2
+        votes = (
+            ('Red',),
+            ('Red',),
+            ('Red',),
+            ('Red',),
+            ('Red',),
+            ('Green',),
+            ('Green',),
+            ('Green',),
+            ('Green',),
+            ('Blue',),
+            ('Blue',),
+            ('Blue',),
+            ('Yellow',),
+            ('Yellow',),
+            ('Mauve',),
+        )
+        stv_round = Round(vacancies, candidates, votes)
+        stv_round.run()
+
+        self.assertFalse(stv_round.all_vacancies_filled())
+
     def test_calculate_initial_totals(self):
         """
         Tests the initial assignment of votes
@@ -470,3 +511,24 @@ class SingeTransferableVoteTest(unittest.TestCase):
         stv_round._exclude_candidate_with_fewest_votes()
 
         self.assertEqual(expected_results, stv_round.results())
+
+    def test_elected_candidates_returns_the_correct_order(self):
+        """
+        Check that candidates with more votes are returned ahead of candidates
+        with fewer votes
+        """
+
+        vacancies = 2
+        candidates = ('Back Bacon', 'Streaky Bacon', 'Peanut')
+        votes = (
+            ('Peanut',),
+            ('Back Bacon',), ('Back Bacon',), ('Back Bacon',),
+            ('Streaky Bacon',), ('Streaky Bacon',), ('Streaky Bacon',), ('Streaky Bacon',),
+        )
+
+        expected_order = ['Streaky Bacon', 'Back Bacon']
+
+        stv_round = Round(vacancies, candidates, votes)
+        stv_round._provisionally_elect_candidates()
+
+        self.assertEqual(expected_order, stv_round.elected_candidates())
