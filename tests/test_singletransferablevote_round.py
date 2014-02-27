@@ -69,57 +69,6 @@ class RoundTest(unittest.TestCase):
         stv_round.run()
         self.assertEqual(expected_results, stv_round.results())
 
-    def test_reallocate_multiple_surplus_votes(self):
-        """
-        This is to test the case where more than one candidate has exceeded
-        the quota so there are more than one set of surplus votes to reallocate.
-        This is the more complex case. In this case, Anna has the most votes so
-        we process her surplus votes first, but since Norm also has enough votes
-        to exceed the quota, Anna's surplus votes are not reallocated to Norm but
-        instead to voter's next choices.
-
-        Initial total votes are:
-            'Dom': 1,
-            'Anna': 5,
-            'Steve': 0,
-            'Norm': 4,
-            'Amy': 0,
-
-        """
-        votes = [
-            ['Anna', 'Amy', 'Steve', 'Norm', 'Dom'],
-            ['Anna', 'Dom', 'Steve', 'Norm'],
-            ['Anna', 'Norm', 'Steve', 'Dom', 'Amy'],
-            ['Anna', 'Norm', 'Steve'],
-            ['Anna', 'Steve', 'Norm', 'Amy', 'Dom'],
-            ['Dom', 'Anna', 'Steve', 'Norm', 'Amy'],
-            ['Norm', 'Anna', 'Steve'],
-            ['Norm', 'Steve', 'Amy', 'Anna', 'Dom'],
-            ['Norm', 'Steve', 'Dom', 'Anna', 'Amy'],
-            ['Norm', 'Steve', 'Norm', 'Anna'],
-        ]
-        candidates = ['Anna', 'Amy', 'Steve', 'Norm', 'Dom']
-        vacancies = 3
-
-        expected_results = {
-            'provisionally_elected': {
-                'Anna': 3,
-                'Norm': 3
-            },
-            'continuing': {
-                'Dom': 1 + Fraction(2,5),
-                'Steve': 2 + Fraction(1,5),
-            },
-            'excluded': {
-                'Amy': Fraction(2,5),
-            }
-        }
-
-        stv_round = Round(vacancies, candidates, votes)
-        stv_round.run()
-
-        self.assertEqual(expected_results, stv_round.results())
-
     def test_reallocate_multiple_quota_met(self):
         """
         This case is where more than one candidate has met the quota. Anna has

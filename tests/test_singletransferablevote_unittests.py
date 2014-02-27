@@ -244,6 +244,58 @@ class SingleTransferableVoteUnitTest(unittest.TestCase):
 
         self.assertEqual(expected_reallocated_totals, stv_round.results())
 
+    def test_reallocation_of_votes_skips_provisionally_elected_candidates(self):
+        """
+        When multiple candidates have been provisionally elected their surplus
+        votes needs to be reallocated for each of them in turn. When the
+        reallocation happens it should skip over the other candidates that have
+        already been provisionally elected.
+        """
+
+        vacancies = 3
+        candidates = ('Anna', 'Amy', 'Steve', 'Norm', 'Dom')
+        votes = 5 * (('Anna', 'Norm', 'Amy'), ) + \
+                3 * (('Norm', 'Amy'), ) + \
+                2 * (('Amy', ), )
+
+        # Both Anna and Norm should be elected initially
+        stv_round = Round(vacancies, candidates, votes)
+        stv_round._provisionally_elect_candidates()
+
+        expected_results = {
+            'provisionally_elected': {
+                'Anna': 5,
+                'Norm': 3
+            },
+            'continuing': {
+                'Amy': 2,
+                'Dom': 0,
+                'Steve': 0
+            },
+            'excluded': {}
+        }
+
+        self.assertEqual(expected_results, stv_round.results())
+
+        # When we reallocate Anna's votes they should go straight to Amy,
+        # rather than going to Norm
+        stv_round._reassign_votes_from_candidate_with_highest_surplus()
+
+        expected_results = {
+            'provisionally_elected': {
+                'Anna': 3,
+                'Norm': 3
+            },
+            'continuing': {
+                'Amy': 4,
+                'Dom': 0,
+                'Steve': 0
+            },
+            'excluded': {}
+        }
+
+        self.assertEqual(expected_results, stv_round.results())
+
     def test_exhausted_votes_are_not_reallocated(self):
         """
         A vote with no further preferences for other candidates shouldn't be
