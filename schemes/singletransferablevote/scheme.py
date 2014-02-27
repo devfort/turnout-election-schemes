@@ -59,6 +59,7 @@ class Round(object):
             self._provisionally_elect_candidates()
 
         self._exclude_candidate_with_fewest_votes()
+        self._provisionally_elect_candidates()
 
     def results(self):
         #import ipdb; ipdb.set_trace()
@@ -88,14 +89,21 @@ class Round(object):
         return len(self.unexhausted_votes) / (self.num_vacancies + 1) + 1
 
     def _provisionally_elect_candidates(self):
-        candidates_at_quota = filter(
-            lambda c: c.value_of_votes() >= self.quota,
-            self.continuing_candidates.values()
-        )
+        #import ipdb; ipdb.set_trace()
+        if len(self.continuing_candidates) <= self._remaining_vacancies():
+            candidates_to_elect = self.continuing_candidates.values()
+        else:
+            candidates_to_elect = filter(
+                lambda c: c.value_of_votes() >= self.quota,
+                self.continuing_candidates.values()
+            )
 
-        for candidate in candidates_at_quota:
+        for candidate in candidates_to_elect:
             self.provisionally_elected_candidates.append(candidate)
             del self.continuing_candidates[candidate.candidate_id]
+
+    def _remaining_vacancies(self):
+        return self.num_vacancies - len(self.provisionally_elected_candidates)
 
     def _surplus_exists(self):
         return len(self._candidates_with_surplus()) > 0
