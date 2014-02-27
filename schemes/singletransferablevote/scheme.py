@@ -103,6 +103,19 @@ class Round(object):
         candidate.devalue_votes(self.quota)
         self._assign_votes(candidate.votes)
 
+    def _exclude_candidate_with_fewest_votes(self):
+        candidate = self._candidate_with_fewest_votes()
+        self.excluded_candidates.append(candidate)
+        del self.candidates[candidate.candidate_id]
+
+    def _candidate_with_fewest_votes(self):
+        candidates = sorted(
+            self.candidates.values(),
+            key = lambda c: c.value_of_votes()
+        )
+
+        return candidates[0]
+
     def _candidates_with_surplus(self):
         candidates = filter(
             lambda c: c.value_of_votes() > self.quota,

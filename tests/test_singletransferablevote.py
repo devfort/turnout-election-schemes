@@ -400,3 +400,34 @@ class SingeTransferableVoteTest(unittest.TestCase):
         )
 
         self.assertEqual(expected_candidates, candidates_with_surplus)
+
+    def test_exclude_candidate_with_fewest_votes(self):
+        """
+        Check that the method moves the candidate with the fewest vote total is
+        moved to excluded
+        """
+
+        votes = (
+            ('Chocolate', ), ('Chocolate', ), ('Chocolate', ), ('Chocolate', ),
+            ('Fruit', ), ('Fruit', ),
+            ('Vegetables', )
+        )
+
+        candidates = ('Vegetables', 'Chocolate', 'Fruit')
+        vacancies = 2
+
+        expected_results = {
+            'provisionally_elected': {},
+            'continuing': {
+                'Chocolate': 4,
+                'Fruit': 2
+            },
+            'excluded': {
+                'Vegetables': 1
+            }
+        }
+
+        stv_round = Round(vacancies, candidates, votes)
+        stv_round._exclude_candidate_with_fewest_votes()
+
+        self.assertEqual(expected_results, stv_round.results())
