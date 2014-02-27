@@ -194,7 +194,7 @@ class Round(object):
             if total_lowest_votes < self.quota:
                 # see if they are less than the next candidates'
                 next_candidate = candidates[index+1]
-                if total_lowest_votes <= next_candidate.value_of_votes():
+                if total_lowest_votes < next_candidate.value_of_votes():
                     print candidate.candidate_id
                     lowest_candidates.append(candidate)
                 else:
