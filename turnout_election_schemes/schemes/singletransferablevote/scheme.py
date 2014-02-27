@@ -162,22 +162,24 @@ class Round(object):
             self._excluded_candidates.append(candidate)
             del self._continuing_candidates[candidate.candidate_id]
 
-    # TO DO rename this to candidates to exclude
     def _candidates_to_exclude(self):
+        bulk_exclusions = self._bulk_exclusions()
+
+        if len(bulk_exclusions) > 1:
+            return bulk_exclusions
+        else:
+            return self._candidate_with_fewest_votes()
+
+    def _candidate_with_fewest_votes(self):
         candidates = sorted(
             self._continuing_candidates.values(),
             key = lambda c: c.value_of_votes()
         )
 
-        # either do bulk exclusion or just lowest
-        lowest_candidates = self._bulk_exclusions()
-        if len(lowest_candidates) <= 1:
-            lowest_candidates = [candidates[0]]
+        if len(candidates) > 1 and candidates[0].value_of_votes() == candidates[1].value_of_votes():
+            raise FailedElectionError
 
-            if len(candidates) > 1 and candidates[0].value_of_votes() == candidates[1].value_of_votes():
-                raise FailedElectionError
-
-        return lowest_candidates
+        return candidates[:1]
 
     def _bulk_exclusions(self):
         # If there are multiple candidates with very low
