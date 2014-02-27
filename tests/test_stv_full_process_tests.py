@@ -38,11 +38,11 @@ class SingleTransferableVoteTest(unittest.TestCase):
                 'Norm': 3,
             },
             'continuing': {
-                'Dom', 2 + Fraction(2,5),
-                'Steve', 1 + Fraction(1,5),
+                'Dom': 2 + Fraction(2,5),
+                'Steve': 1 + Fraction(1,5),
             },
             'excluded': {
-                'Amy', Fraction(2,5),
+                'Amy': Fraction(2,5),
             },
         }
 
