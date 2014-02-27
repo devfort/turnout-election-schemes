@@ -13,10 +13,8 @@ class RoundTest(unittest.TestCase):
 
         vacancies = 2
         candidates = ('Red', 'Green', 'Blue')
-        votes = (
-            ('Red', ), ('Red', ), ('Red', ), ('Red', ),
-            ('Green', ), ('Green', ), ('Green', ), ('Green', )
-        )
+        votes = 4 * (('Red', ), ) + \
+                3 * (('Green', ), )
 
         stv_round = Round(vacancies, candidates, votes)
         self.assertFalse(stv_round.all_vacancies_filled())
@@ -32,13 +30,11 @@ class RoundTest(unittest.TestCase):
 
         vacancies = 2
         candidates = ('Red', 'Green', 'Blue', 'Yellow', 'Mauve')
-        votes = (
-            ('Red',), ('Red',), ('Red',), ('Red',), ('Red',),
-            ('Green',), ('Green',), ('Green',), ('Green',),
-            ('Blue',), ('Blue',), ('Blue',),
-            ('Yellow',), ('Yellow',),
-            ('Mauve',)
-        )
+        votes = 5 * (('Red', ), ) + \
+                4 * (('Green', ), ) + \
+                3 * (('Blue', ), ) + \
+                2 * (('Yellow', ), ) + \
+                1 * (('Mauve', ), )
 
         stv_round = Round(vacancies, candidates, votes)
         stv_round.run()
