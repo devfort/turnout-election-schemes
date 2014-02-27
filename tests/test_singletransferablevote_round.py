@@ -117,8 +117,8 @@ class RoundTest(unittest.TestCase):
 
         vacancies = 3
         candidates = ('A', 'B', 'C', 'D')
-        votes = 6 * (('A', 'B'), ), + \
-                5 * (('B', 'A'), ), + \
+        votes = 5 * (('A', 'B'), ) + \
+                4 * (('B', 'A'), ) + \
                 1 * (('C', ), )
 
         expected_results = {
