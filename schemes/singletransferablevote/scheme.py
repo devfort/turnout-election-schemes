@@ -106,6 +106,16 @@ class Round(object):
             self.provisionally_elected_candidates.append(candidate)
             del self.continuing_candidates[candidate.candidate_id]
 
+    def elected_candidates(self):
+        """
+        Return the list of the candidates that have been
+        provisionally elected in order of election.
+        """
+        return map(
+            lambda c: c.candidate_id,
+            self.provisionally_elected_candidates
+        )
+
     def _remaining_vacancies(self):
         return self.num_vacancies - len(self.provisionally_elected_candidates)
 
@@ -183,6 +193,10 @@ class SingleTransferableVoteScheme(object):
 
     def completed(self):
         return self.latest_round.all_vacancies_filled()
+
+    def final_results(self):
+        if self.completed():
+            return self.latest_round.elected_candidates()
 
 class __SingleTransferableVoteScheme(object):
     """"""
