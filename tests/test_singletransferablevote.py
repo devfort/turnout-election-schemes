@@ -62,14 +62,53 @@ class SingeTransferableVoteTest(unittest.TestCase):
 
         stv_round = Round(vacancies, candidates, votes)
         stv_round._provisionally_elect_candidates()
-        results = stv_round.results()
 
         expected_totals = {
-            'A': 4,
-            'B': 3
+            'provisionally_elected': {
+                'A': 4,
+                'B': 3
+            },
+            'continuing': {
+                'C': 1
+            },
+            'excluded': {}
         }
 
-        self.assertEqual(expected_totals, results['provisionally_elected'])
+        self.assertEqual(expected_totals, stv_round.results())
+
+    def test_provisionally_elect_candidates_auto_fills_vacancies(self):
+        """
+        If there are as many remaining vacancies as remaining candidates then
+        all remaining candidates should be elected even if they don't meet the
+        quota.
+
+        In this example, the quota is 3 votes and we expected candidate C to be
+        elected even though they only have 2 votes.
+        """
+
+        votes = (
+            ('A', ), ('A', ), ('A', ), ('A', ),
+            ('B', ), ('B', ), ('B', ),
+            ('C', ), ('C', )
+        )
+        candidates = ('A', 'B', 'C')
+        vacancies = 3
+
+        stv_round = Round(vacancies, candidates, votes)
+        stv_round._provisionally_elect_candidates()
+
+        expected_totals = {
+            'provisionally_elected': {
+                'A': 4,
+                'B': 3,
+                'C': 2
+            },
+            'continuing': {
+            },
+            'excluded': {}
+        }
+
+        self.assertEqual(expected_totals, stv_round.results())
 
     def test_reallocate_surplus_votes(self):
         """
