@@ -50,9 +50,7 @@ class Round(object):
 
         #import ipdb; ipdb.set_trace()
         while self._surplus_exists():
-            candidate = self._candidates_with_surplus()[0]
-            candidate.devalue_votes(self.quota)
-            self._assign_votes(candidate.votes)
+            self._reassign_votes_from_candidate_with_highest_surplus()
             self._provisionally_elect_candidates()
 
     def results(self):
@@ -95,9 +93,22 @@ class Round(object):
     def _surplus_exists(self):
         return len(self._candidates_with_surplus()) > 0
 
+    def _reassign_votes_from_candidate_with_highest_surplus(self):
+        candidate = self._candidates_with_surplus()[0]
+        candidate.devalue_votes(self.quota)
+        self._assign_votes(candidate.votes)
+
     def _candidates_with_surplus(self):
-        # TODO this needs to be ordered
-        return filter(lambda c: c.value_of_votes() > self.quota, self.provisionally_elected_candidates)
+        candidates = filter(
+            lambda c: c.value_of_votes() > self.quota,
+            self.provisionally_elected_candidates
+        )
+
+        return sorted(
+            candidates,
+            key = lambda c: c.value_of_votes(),
+            reverse = True
+        )
 
     def _provisionally_elected(self):
         return self._candidate_dict_for_results(self.provisionally_elected_candidates)
