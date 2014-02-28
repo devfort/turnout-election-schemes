@@ -72,7 +72,6 @@ class RoundTest(unittest.TestCase):
         print stv_round.results()
         self.assertEqual(expected_results, stv_round.results())
 
-    @unittest.skip("as above - fix")
     def test_tied_winners_should_cause_election_to_fail_without_a_random_generator(self):
         """
         When there's a tie between winners arbitrarily choosing one to
@@ -239,7 +238,6 @@ class RoundTest(unittest.TestCase):
 
     # TODO bulk exclusion breaks this test
     # Document why it should not
-    @unittest.skip("to  do  - bulk exclusion should not break it")
     def test_candidates_should_be_elected_once_there_is_one_per_vacanc(self):
         """
         As soon as there are the same number of remaining candidates as
