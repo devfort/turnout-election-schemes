@@ -69,3 +69,4 @@ class STVoteFullProcessTest(unittest.TestCase):
             'Dom',
         ]
         self.assertEqual(final_results, stv.final_results())
+        self.assertEqual((False, [expected_round_1, expected_round_2], ['Anna', 'Norm', 'Dom']), stv.outcome())

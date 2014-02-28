@@ -306,6 +306,7 @@ class SingleTransferableVoteScheme(object):
         self.votes = votes
         self.random = random
         self.rounds = []
+        self.success = False
 
     def run_round(self):
         new_round = Round(self.num_vacancies, self.remaining_candidates, self.votes, random=self.random)
