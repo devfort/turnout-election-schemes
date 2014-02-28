@@ -3,11 +3,6 @@ from turnout_election_schemes.schemes.majorityjudgement.count import MajorityJud
 from turnout_election_schemes.schemes.majorityjudgement.vote_aggregator import VoteAggregator
 
 class Scheme(object):
-    identifier = 'majority_judgement'
-    name = "Majority Judgement"
-    max_winners = 1
-    description = "Allows you to choose a single winner whilst taking into account the graded preferences of voters."
-
     def perform_count(self, candidate_ids, votes_as_json, max_grade=4):
         """
         votes_as_json is a list of tuples, each one being an individual users votes.

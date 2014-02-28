@@ -300,8 +300,7 @@ class SingleTransferableVoteScheme(object):
             return self.rounds[-1]
 
     def round_results(self):
-        if len(self.rounds) > 0:
-            return self.latest_round().results()
+        return map(lambda r: r.results(), self.rounds)
 
     def completed(self):
         if len(self.rounds) > 0:
@@ -310,3 +309,14 @@ class SingleTransferableVoteScheme(object):
     def final_results(self):
         if self.completed():
             return self.latest_round().elected_candidates()
+
+    def outcome(self):
+        (self.success, self.round_results(), self.final_results())
+
+    def run(self):
+        self.success = True
+        try:
+            while not self.completed():
+                self.run_round()
+        except FailedElectionError:
+            self.success = False
