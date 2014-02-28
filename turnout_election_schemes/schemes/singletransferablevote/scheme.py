@@ -1,5 +1,3 @@
-from operator import itemgetter
-import math
 from turnout_election_schemes.schemes.errors import FailedElectionError
 from .candidate import Candidate
 from .stv_round import Round, _Random
