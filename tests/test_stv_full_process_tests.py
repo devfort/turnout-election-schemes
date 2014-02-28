@@ -43,7 +43,7 @@ class STVoteFullProcessTest(unittest.TestCase):
             },
         }
 
-        self.assertEqual(expected_round_1, stv.round_results())
+        self.assertEqual([expected_round_1], stv.round_results())
         self.assertFalse(stv.completed())
 
         stv.run_round()
@@ -60,7 +60,7 @@ class STVoteFullProcessTest(unittest.TestCase):
             },
         }
 
-        self.assertEqual(expected_round_2, stv.round_results())
+        self.assertEqual([expected_round_1, expected_round_2], stv.round_results())
         self.assertTrue(stv.completed())
 
         final_results = [
