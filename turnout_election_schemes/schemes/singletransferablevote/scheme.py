@@ -213,16 +213,13 @@ class Round(object):
             key = lambda c: c.value_of_votes()
         )
 
-        bulk_exclusions = []
-
-        current_slice = []
         eligible_slice = []
+        current_slice = []
         for index in range(0, len(candidates)-1):
-            current_slice = self._get_slice_of_lowest_to_n_inclusive(candidates, index)
+            current_slice = self._lowest_to_n_inclusive(candidates, index)
             total_votes = self._slice_total_votes(current_slice)
             if total_votes < self.quota:
-                total_of_next = self._total_of_next_highest_candidate(index, candidates)
-                if total_votes < total_of_next:
+                if total_votes < self._next_highest_total(index, candidates):
                     eligible_slice = current_slice
                 else:
                     print "looking at next one"
@@ -231,6 +228,7 @@ class Round(object):
 
         # eligibility criteria
 
+        bulk_exclusions = []
         print "at this stage, elible is:"
         for a in eligible_slice:
             print "elig:", a.candidate_id
@@ -250,11 +248,11 @@ class Round(object):
             totals += candidate.value_of_votes()
         return totals
 
-    def _total_of_next_highest_candidate(self, index, candidates):
+    def _next_highest_total(self, index, candidates):
         next_candidate = candidates[index+1]
         return next_candidate.value_of_votes()
 
-    def _get_slice_of_lowest_to_n_inclusive(self, candidates, index):
+    def _lowest_to_n_inclusive(self, candidates, index):
         low_slice = []
         # to n inclusive
         for index in range(0,index+1):
