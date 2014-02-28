@@ -226,21 +226,16 @@ class Round(object):
             else:
                 break
 
-        # eligibility criteria
-
         bulk_exclusions = []
-        print "at this stage, elible is:"
-        for a in eligible_slice:
-            print "elig:", a.candidate_id
-        # slice is no longer eligible if only 1
-        if len(eligible_slice) > 1:
+        if self._enough_candidates_would_remain(eligible_slice) and len(eligible_slice) > 1:
             bulk_exclusions = eligible_slice
 
-        # deal with case where they never satisfy all conditions
-
-        # if it causes there to be too few remaining candidiate
-
         return bulk_exclusions
+
+    def _enough_candidates_would_remain(self, eligible_slice):
+        number_to_exclude = len(eligible_slice)
+        potential_candidates = len(self._continuing()) + len(self._provisionally_elected())
+        return potential_candidates - number_to_exclude >= self.num_vacancies
 
     def _slice_total_votes(self, current_slice):
         totals = 0
