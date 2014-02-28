@@ -198,10 +198,16 @@ class Round(object):
             return candidates[0]
 
     def _bulk_exclusions(self):
-        # Two or more candidates may be excluded simultaneously if the
-        # aggregated value of all candidates to be excluded is less then the
-        # value of the next lowest candidate and the value required by a
-        # candidate to obtain a quota
+        """
+        Two or more candidates may be excluded simultaneously if the aggregated
+        value of all candidates to be excluded is less then the value of the
+        next lowest candidate and the value required by a candidate to obtain a
+        quota.
+
+        This method returns a list of candidates which may be excluded in this
+        way or an empty list if a bulk exclusion isn't possible.
+        """
+
         candidates = sorted(
             self._continuing_candidates.values(),
             key = lambda c: c.value_of_votes()
@@ -214,7 +220,7 @@ class Round(object):
             lowest_candidates.append(candidates[0])
             lowest_candidates.append(candidates[1])
             # there is a problem here whem the list of
-            # continuing candidates is only 3 long
+            # continuing candidates is only 3 long
             # and presumably, shorter as well
             # look at tomorrow
             for index in range(2,len(candidates)-1):
