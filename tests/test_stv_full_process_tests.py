@@ -7,7 +7,8 @@ class STVoteFullProcessTest(unittest.TestCase):
 
     # TODO: this should be a full election test
     # TODO: fix totals
-    @unittest.skip("1 and 1/5 + 2/5 is less than both 2 and 2/5 and the quota, so bulk elimination kills this test")
+    # 1 and 1/5 + 2/5 is less than both 2 and 2/5 and the quota, so bulk
+    # elimination kills this test
     def test_initial_case(self):
         """
         This election has three rounds and ends successfully with three

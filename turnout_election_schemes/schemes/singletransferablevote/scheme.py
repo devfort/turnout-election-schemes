@@ -213,10 +213,15 @@ class Round(object):
         if total_of_lowest_candidates < self.quota:
             lowest_candidates.append(candidates[0])
             lowest_candidates.append(candidates[1])
+            # there is a problem here whem the list of
+            # continuing candidates is only 3 long
+            # and presumably, shorter as well
+            # look at tomorrow
             for index in range(2,len(candidates)-1):
                 total_of_lowest_candidates += candidates[index].value_of_votes()
                 if total_of_lowest_candidates < self.quota:
                     next_candidate = candidates[index+1]
+                    print next_candidate.candidate_id
                     if total_of_lowest_candidates < next_candidate.value_of_votes():
                         lowest_candidates.append(candidates[index])
                 else:
