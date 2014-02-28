@@ -81,6 +81,7 @@ class RoundTest(unittest.TestCase):
         winners. This test demonstrates both outcomes of a random tie being
         broken by mocking two versions of a random generator.
         """
+
         vacancies = 4
         candidates = ('A', 'B', 'C', 'D', 'E')
         votes = 9 * (('A', 'C'), ) + \
@@ -136,20 +137,70 @@ class RoundTest(unittest.TestCase):
         self.assertEqual(expected_results, stv_round.results())
 
     def test_tied_losers_should_cause_election_to_fail(self):
-        votes = (
-            ('A', 'C'), ('A', 'D'),
-            ('B', 'E'), ('B', 'E'),
-            ('C', ), ('C', ), ('C', ),
-            ('D', ), ('D', ), ('D', ),
-            ('E', ), ('E', ), ('E', ),
-        )
-        candidates = ['A', 'B', 'C', 'D', 'E']
-        vacancies = 3
+        """
+        When there's a tie between losers arbitrarily choosing one to exclude
+        first may impact the election result. If a random generator is not
+        passed in then a FailedElectionError should be thrown in cases of
+        ambiguity.
+
+        When a random generator is provided it should be used to break ties of
+        losers. This test demonstrates both outcomes of a random tie being
+        broken by mocking two versions of a random generator.
+        """
+
+        vacancies = 4
+        candidates = ('A', 'B', 'C', 'D', 'E')
+        votes = 2 * (('A', 'B'), ) + \
+                2 * (('B', 'A'), ) + \
+                3 * (('C', ), ) + \
+                3 * (('D', ), ) + \
+                3 * (('E', ), )
 
         stv_round = Round(vacancies, candidates, votes)
-
         with self.assertRaises(FailedElectionError):
             stv_round.run()
+
+        class MockRandom(object):
+            def choice(self, sequence):
+                return sequence[0]
+
+        expected_results = {
+            'provisionally_elected': {
+                'B': 2,
+                'C': 3,
+                'D': 3,
+                'E': 3
+            },
+            'continuing': {},
+            'excluded': {
+                'A': 2
+            }
+        }
+
+        stv_round = Round(vacancies, candidates, votes, random = MockRandom())
+        stv_round.run()
+        self.assertEqual(expected_results, stv_round.results())
+
+        class MockRandom(object):
+            def choice(self, sequence):
+                return sequence[1]
+
+        expected_results = {
+            'provisionally_elected': {
+                'A': 2,
+                'C': 3,
+                'D': 3,
+                'E': 3
+            },
+            'continuing': {},
+            'excluded': {
+                'B': 2
+            }
+        }
+
+        stv_round = Round(vacancies, candidates, votes, random = MockRandom())
+        stv_round.run()
+        self.assertEqual(expected_results, stv_round.results())
 
     def test_bulk_eliminiation_resolves_tied_loser_failures(self):
         votes = (

@@ -177,6 +177,11 @@ class Round(object):
             return [self._candidate_with_fewest_votes()]
 
     def _candidate_with_fewest_votes(self):
+        """
+        Return the candidate with the fewest votes. In case of a tie, break it
+        using the random generator.
+        """
+
         fewest_votes = min(map(
             lambda c: c.value_of_votes(),
             self._continuing_candidates.values()
@@ -188,7 +193,7 @@ class Round(object):
         )
 
         if len(candidates) > 1:
-            raise FailedElectionError
+            return self.random.choice(candidates)
         else:
             return candidates[0]
 
