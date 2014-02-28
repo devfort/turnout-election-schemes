@@ -204,6 +204,9 @@ class Round(object):
         next lowest candidate and the value required by a candidate to obtain a
         quota.
 
+        If bulk exclusion mean that too few candidates remain to fill the
+        vacancies, bulk exclusion should not be applied.
+
         This method returns a list of candidates which may be excluded in this
         way or an empty list if a bulk exclusion isn't possible.
         """
@@ -213,27 +216,47 @@ class Round(object):
             key = lambda c: c.value_of_votes()
         )
 
-        total_of_lowest_candidates = candidates[0].value_of_votes() + candidates[1].value_of_votes()
+        eligible_slice = []
+        current_slice = []
+        for index in range(0, len(candidates)-1):
+            current_slice = self._lowest_to_n_inclusive(candidates, index)
+            total_votes = self._slice_total_votes(current_slice)
+            if (
+                total_votes < self.quota
+                and total_votes < self._next_highest_total(index, candidates)
+            ):
+                    eligible_slice = current_slice
 
-        lowest_candidates=[]
-        if total_of_lowest_candidates < self.quota:
-            lowest_candidates.append(candidates[0])
-            lowest_candidates.append(candidates[1])
-            # there is a problem here whem the list of
-            # continuing candidates is only 3 long
-            # and presumably, shorter as well
-            # look at tomorrow
-            for index in range(2,len(candidates)-1):
-                total_of_lowest_candidates += candidates[index].value_of_votes()
-                if total_of_lowest_candidates < self.quota:
-                    next_candidate = candidates[index+1]
-                    print next_candidate.candidate_id
-                    if total_of_lowest_candidates < next_candidate.value_of_votes():
-                        lowest_candidates.append(candidates[index])
-                else:
-                    break
+        bulk_exclusions = []
+        if (
+            len(eligible_slice) > 1
+            and self._enough_candidates_would_remain(eligible_slice)
+        ):
+            bulk_exclusions = eligible_slice
 
-        return lowest_candidates
+        return bulk_exclusions
+
+    def _enough_candidates_would_remain(self, eligible_slice):
+        number_to_exclude = len(eligible_slice)
+        potential_candidates = len(self._continuing()) + len(self._provisionally_elected())
+        return potential_candidates - number_to_exclude >= self.num_vacancies
+
+    def _slice_total_votes(self, current_slice):
+        totals = 0
+        for candidate in current_slice:
+            totals += candidate.value_of_votes()
+        return totals
+
+    def _next_highest_total(self, index, candidates):
+        next_candidate = candidates[index+1]
+        return next_candidate.value_of_votes()
+
+    def _lowest_to_n_inclusive(self, candidates, index):
+        low_slice = []
+        # to n inclusive
+        for index in range(0,index+1):
+            low_slice.append(candidates[index])
+        return low_slice
 
     def _candidate_with_highest_surplus(self):
         most_votes = max(map(

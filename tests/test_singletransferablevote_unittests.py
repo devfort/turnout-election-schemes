@@ -5,8 +5,7 @@ from turnout_election_schemes.schemes.singletransferablevote.scheme import Round
 
 class SingleTransferableVoteUnitTest(unittest.TestCase):
 
-    # Moved from full test - should be unit test
-    # TODO This test is failing now bulk exclusion is implemented
+    # TODO Moved from full test - should be unit test
     def test_exhausted_ballots_should_not_be_used(self):
         votes = (
             ('A',),
@@ -526,3 +525,39 @@ class SingleTransferableVoteUnitTest(unittest.TestCase):
         stv_round._provisionally_elect_candidates()
 
         self.assertEqual(expected_order, stv_round.elected_candidates())
+
+    def test_bulk_exclusion_does_not_leave_too_few_candidates(self):
+        """
+        In the case where bulk exclusion would cause there to be too few
+        remaining candidates for the vacancies avaible, it should not
+        happen, and only the lowest should be excluded.
+
+        In this example there are 6 candidates for 4 vacancies.
+
+        Bulk exclusion would knock off the bottom three, meaning that only
+        three candidates were available for the remaining 4 places. In this
+        case, we do not apply bulk exclusion.
+
+        This means that "What I Loved" and "Gone Girl" both have a chance of
+        being elected, despite being terrible books.
+        """
+
+        votes = 17 * (('A Suitable Boy', ), ) + \
+                12 * (('Farewell My Lovely', ), ) + \
+                2 * (('What I Loved', ), ) + \
+                1 * (('Gone Girl', ), )
+
+        candidates = [
+            'A Suitable Boy',
+            'Farewell My Lovely',
+            'What I Loved',
+            'The Da Vinci Code',
+            'Angels and Demons',
+            'Gone Girl'
+        ]
+        vacancies  = 4
+
+        stv_round = Round(vacancies, candidates, votes)
+        bulk_exclusions = stv_round._bulk_exclusions()
+
+        self.assertTrue(len(bulk_exclusions) == 0)
