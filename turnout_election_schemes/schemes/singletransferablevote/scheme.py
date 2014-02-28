@@ -204,6 +204,9 @@ class Round(object):
         next lowest candidate and the value required by a candidate to obtain a
         quota.
 
+        If bulk exclusion mean that too few candidates remain to fill the
+        vacancies, bulk exclusion should not be applied.
+
         This method returns a list of candidates which may be excluded in this
         way or an empty list if a bulk exclusion isn't possible.
         """
@@ -218,16 +221,17 @@ class Round(object):
         for index in range(0, len(candidates)-1):
             current_slice = self._lowest_to_n_inclusive(candidates, index)
             total_votes = self._slice_total_votes(current_slice)
-            if total_votes < self.quota:
-                if total_votes < self._next_highest_total(index, candidates):
+            if (
+                total_votes < self.quota
+                and total_votes < self._next_highest_total(index, candidates)
+            ):
                     eligible_slice = current_slice
-                else:
-                    print "looking at next one"
-            else:
-                break
 
         bulk_exclusions = []
-        if self._enough_candidates_would_remain(eligible_slice) and len(eligible_slice) > 1:
+        if (
+            len(eligible_slice) > 1
+            and self._enough_candidates_would_remain(eligible_slice)
+        ):
             bulk_exclusions = eligible_slice
 
         return bulk_exclusions
