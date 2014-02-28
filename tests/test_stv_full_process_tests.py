@@ -5,11 +5,6 @@ from turnout_election_schemes.schemes.singletransferablevote.scheme import Singl
 
 class STVoteFullProcessTest(unittest.TestCase):
 
-    # TODO: this should be a full election test
-    # TODO: fix totals
-    # 1 and 1/5 + 2/5 is less than both 2 and 2/5 and the quota, so bulk
-    # elimination kills this test
-    @unittest.skip("case killed")
     def test_initial_case(self):
         """
         This election has three rounds and ends successfully with three
@@ -20,9 +15,9 @@ class STVoteFullProcessTest(unittest.TestCase):
             ['Dom', 'Anna', 'Steve', 'Norm', 'Amy'],
             ['Dom', 'Steve', 'Norm', 'Anna'],
             ['Norm', 'Steve', 'Amy', 'Anna', 'Dom'],
-            ['Anna', 'Amy', 'Steve', 'Norm', 'Dom'],
+            ['Anna', 'Amy', 'Dom', 'Norm', 'Steve'],
             ['Anna', 'Steve', 'Norm', 'Amy', 'Dom'],
-            ['Anna', 'Dom', 'Steve', 'Norm'],
+            ['Anna', 'Steve', 'Dom', 'Norm'],
             ['Norm', 'Steve', 'Dom', 'Anna', 'Amy'],
             ['Anna', 'Norm', 'Steve', 'Dom', 'Amy'],
             ['Anna', 'Norm', 'Steve'],
@@ -40,8 +35,8 @@ class STVoteFullProcessTest(unittest.TestCase):
                 'Norm': 3,
             },
             'continuing': {
-                'Dom': 2 + Fraction(2,5),
-                'Steve': 1 + Fraction(1,5),
+                'Dom': 2,
+                'Steve': 1 + Fraction(3,5),
             },
             'excluded': {
                 'Amy': Fraction(2,5),
