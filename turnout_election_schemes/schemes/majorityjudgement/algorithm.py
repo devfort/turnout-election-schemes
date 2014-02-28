@@ -12,22 +12,21 @@ from 0 as the lowest. Because all that matters is the ordering, any other
 grading scheme can be trivially converted to this form.
 
 The essential idea of majority judgement is that we sort the grades assigned to
-the candidate in order of most significant to least significant. At any given
-point the most significant grade of those left is the lower median of the set
-(i.e. the highest grade which at least 50% of the population supports).
+the candidate in order of most significant to least significant in order to compare candidates. At any given point the most significant grade of those left is the lower median of the set (i.e. the highest grade which at least 50% of the population supports).
 
-So for example given the grading Bad, OK, OK, Good we would convert this to the
-sequence
+For example:
 
-OK, Bad, OK, Good
+Candidate A has four votes: Bad, OK, OK, Good. The median of A's votes is OK, so that is the most significant grade. Once OK is removed, the median of the remainder (Bad, OK, Good) is OK.
 
-Another candidate might have the grading
+In this way, we order candidate A's votes like this:
+
+OK, OK, Bad, Good.
+
+Candidate B might have the gradings OK, OK, Good, Good, ordered in the same way:
 
 OK, Good, OK, Good
 
-This candidate would win because their second grading is better than the first
-candidate's.
-
+Candidate B would win because their second grading is better than candidates A's.
 This module provides a type which wraps a tally of grades and is then ordered
 in terms of the majority judgement. It may then be used to implement a voting
 procedure by assigning each candidate their tally and taking the maximum.
