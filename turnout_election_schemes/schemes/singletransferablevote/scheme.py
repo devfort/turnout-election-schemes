@@ -213,27 +213,53 @@ class Round(object):
             key = lambda c: c.value_of_votes()
         )
 
-        total_of_lowest_candidates = candidates[0].value_of_votes() + candidates[1].value_of_votes()
+        bulk_exclusions = []
 
-        lowest_candidates=[]
-        if total_of_lowest_candidates < self.quota:
-            lowest_candidates.append(candidates[0])
-            lowest_candidates.append(candidates[1])
-            # there is a problem here whem the list of
-            # continuing candidates is only 3 long
-            # and presumably, shorter as well
-            # look at tomorrow
-            for index in range(2,len(candidates)-1):
-                total_of_lowest_candidates += candidates[index].value_of_votes()
-                if total_of_lowest_candidates < self.quota:
-                    next_candidate = candidates[index+1]
-                    print next_candidate.candidate_id
-                    if total_of_lowest_candidates < next_candidate.value_of_votes():
-                        lowest_candidates.append(candidates[index])
+        current_slice = []
+        eligible_slice = []
+        for index in range(0, len(candidates)-1):
+            current_slice = self._get_slice_of_lowest_to_n_inclusive(candidates, index)
+            total_votes = self._slice_total_votes(current_slice)
+            if total_votes < self.quota:
+                total_of_next = self._total_of_next_highest_candidate(index, candidates)
+                if total_votes < total_of_next:
+                    eligible_slice = current_slice
                 else:
-                    break
+                    print "looking at next one"
+            else:
+                break
 
-        return lowest_candidates
+        # eligibility criteria
+
+        print "at this stage, elible is:"
+        for a in eligible_slice:
+            print "elig:", a.candidate_id
+        # slice is no longer eligible if only 1
+        if len(eligible_slice) > 1:
+            bulk_exclusions = eligible_slice
+
+        # deal with case where they never satisfy all conditions
+
+        # if it causes there to be too few remaining candidiate
+
+        return bulk_exclusions
+
+    def _slice_total_votes(self, current_slice):
+        totals = 0
+        for candidate in current_slice:
+            totals += candidate.value_of_votes()
+        return totals
+
+    def _total_of_next_highest_candidate(self, index, candidates):
+        next_candidate = candidates[index+1]
+        return next_candidate.value_of_votes()
+
+    def _get_slice_of_lowest_to_n_inclusive(self, candidates, index):
+        low_slice = []
+        # to n inclusive
+        for index in range(0,index+1):
+            low_slice.append(candidates[index])
+        return low_slice
 
     def _candidate_with_highest_surplus(self):
         most_votes = max(map(
