@@ -334,7 +334,7 @@ class SingleTransferableVoteScheme(object):
             return self.latest_round().elected_candidates()
 
     def outcome(self):
-        (self.success, self.round_results(), self.final_results())
+        return (self.success, self.round_results(), self.final_results())
 
     def run(self):
         self.success = True
