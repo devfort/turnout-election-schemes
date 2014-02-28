@@ -18,7 +18,7 @@ setup(
     ],
     license='MIT',
     author='/dev/fort 9',
-    author_email='contact@devfort.com',
+    author_email='contact@pebblebox.org',
     install_requires=[
     ],
     url='https://github.com/devfort/turnout_election_schemes',
