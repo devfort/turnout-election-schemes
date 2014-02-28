@@ -171,8 +171,7 @@ class Round(object):
 
         bulk_exclusions = self._bulk_exclusions()
 
-        # TODO this should return an empty list as its failure case
-        if len(bulk_exclusions) > 2:
+        if len(bulk_exclusions) > 0:
             return bulk_exclusions
         else:
             return [self._candidate_with_fewest_votes()]
