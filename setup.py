@@ -9,7 +9,7 @@ VERSION = '0.2'
 
 setup(
     name=PACKAGE, version=VERSION,
-    description="Contains election schemes for pebblebox.",
+    description="Library implementing (some) modern election schemes.",
     packages=[
         'turnout_election_schemes',
         'turnout_election_schemes.schemes',
@@ -18,15 +18,13 @@ setup(
     ],
     license='MIT',
     author='/dev/fort 9',
-    author_email='contact@pebblebox.org',
+    author_email='turnout-elections@groups.google.com',
     install_requires=[
     ],
-    url='https://github.com/devfort/turnout_election_schemes',
+    url='https://github.com/devfort/turnout-election-schemes',
     classifiers=[
         'Intended Audience :: Developers',
-        'Framework :: Django',
         'License :: OSI Approved :: MIT License',
         'Programming Language :: Python :: 2',
-        'Programming Language :: Python :: 3',
     ],
 )
