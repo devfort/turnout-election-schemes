@@ -16,6 +16,9 @@ setup(
         'turnout_election_schemes.schemes.majorityjudgement',
         'turnout_election_schemes.schemes.singletransferablevote',
     ],
+    scripts=[
+      'scripts/run_an_election',
+    ],
     license='MIT',
     author='/dev/fort 9',
     author_email='turnout-elections@groups.google.com',
