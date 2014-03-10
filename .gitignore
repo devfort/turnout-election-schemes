@@ -1,2 +1,4 @@
 *.pyc
 *~
+/dist
+/turnout_election_schemes.egg-info
