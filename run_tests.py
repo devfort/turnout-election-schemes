@@ -5,7 +5,7 @@ import sys
 
 if __name__ == '__main__':
     loader = unittest.TestLoader()
-    suite = loader.discover('tests')
+    suite = loader.discover('turnout_election_schemes')
 
     runner = unittest.TextTestRunner(verbosity=2)
     runner.run(suite)
